@@ -23,14 +23,14 @@ int main()
     printf("%s\n",arr);            //Print the reversed string if no errors
     
     char arr2[] = "some NUMmbers12345";
-    i = reverse_string(arr,strlen(arr));
+    i = reverse_string(arr2,strlen(arr2));
     if(i!=0)
     printf("Error code %d\n",i); //Print error code if any
     else
     printf("%s\n",arr2);         //Print the reversed string if no errors
     
     char arr3[] = "Does it reverse \n\0\t correctly?";
-    i = reverse_string(arr,strlen(arr));
+    i = reverse_string(arr3,strlen(arr3));
     if(i!=0)
     printf("Error code %d\n",i); //Print error code if any
     else

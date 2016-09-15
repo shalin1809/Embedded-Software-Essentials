@@ -11,7 +11,7 @@ char reverse_string(char *str, int length)
     return 3;
     else
     {
-        if(*(str+length+1)!='\0') //check for NULL ending
+        if((str[length])!='\0') //check for NULL ending
         return 4;
         else
         {
