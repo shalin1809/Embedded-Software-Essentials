@@ -1,7 +1,7 @@
 
 CC = gcc
 
-CFLAGS = -c -Wall -g -std=c99 -	O0
+CFLAGS = -c -Wall -g -std=c99 -O0
 
 options_c = hw1.c main.c hw1.h
 options_o = hw1.o main.o
