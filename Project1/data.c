@@ -1,10 +1,37 @@
+/********************************************
+*   File: data.c
+*
+*   Copyrights 2016 Shalin Shah and Snehal Sanghvi
+*   All Rights Reserved
+*
+*
+*   The information contained herein is property of the Authors.
+*   The copying and distribution of the files is prohibited except
+*   by express written agreement with the Authors.
+*
+*
+*   Authors: Shalin Shah and Snehal Sanghvi
+*   Date Edited: 17 Sept 2016
+*
+*   Description: Source file for the data manipulation functions
+*               -my_itoa
+*               -my_atoi
+*               -dump_memory
+*               -big_to_little
+*               -little_to_big
+*
+*
+********************************************************/
+
 #include "data.h"
+#include "stdio.h"
+#include"stdint.h"
 
 /*
 Integer to ASCII (Null terminated string)
 */
-int8_t * my_itoa(int8_t *str, int32_t data, int32_t base){ 
-    
+int8_t * my_itoa(int8_t *str, int32_t data, int32_t base){
+
     // If the number is '0'
     if (data == 0){
         *str++ = '0';
@@ -57,42 +84,43 @@ int8_t * my_itoa(int8_t *str, int32_t data, int32_t base){
 
 
 /*
-ASCII to integer 
+ASCII to integer
 */
 int32_t my_atoi(int8_t *str){
     if (*str == NULL)
        return 0;
-  
+
     int32_t number = 0;  // Initialize the output number
     int8_t neg = 1;  // For negative values, setting it as positive by default
     uint8_t i = 0;  // Initialize index of first digit
-  
+
     // If number is negative, then update sign
-    if (*str++ == '-'){
+    if (*str == '-'){
         neg = -1;
+        str++;
     }
-  
-    // Calculating and adding each digit of the string. 
+
+    // Calculating and adding each digit of the string.
     while(*str != '\0')
     {
-        if (*str >= '0' && *str <= '9'))
+        if (*str >= '0' && *str <= '9')
             number = number*10 + *str++ - '0';
         else {
         printf("\nInvalid numerical string");           //Generate error message if string does not have a number
         return 0;
-        }      
+        }
     }
-  
+
     // Return result with sign
     return neg*number;
-    
+
 }
 
 
 
 
 /*
-Print the hex output of the values in the memory space 
+Print the hex output of the values in the memory space
 */
 void dump_memory(uint8_t * start, uint32_t length){
     while(length--)
@@ -111,7 +139,7 @@ uint32_t big_to_little(uint32_t data){
             ((data<<8)&0x00FF0000) |                //Put third byte to second byte
             ((data>>8)&0x0000FF00) |                //Put second byte to third byte
             ((data>>24)&0x000000FF)                 //Put first byte to last byte
-            )
+            );
 }
 
 
@@ -125,5 +153,6 @@ uint32_t little_to_big(uint32_t data){
             ((data<<8)&0x00FF0000) |                //Put third byte to second byte
             ((data>>8)&0x0000FF00) |                //Put second byte to third byte
             ((data>>24)&0x000000FF)                 //Put first byte to last byte
-            )
+            );
 }
+
