@@ -3,13 +3,13 @@ CC = gcc
 
 CFLAGS = -c -Wall -g -std=c99 -O0
 
-options_c = hw1.c main.c hw1.h
-options_o = hw1.o main.o
+options_c = data.c memory.c main.c project_1.c data.h memory.h project_1.h
+options_o = data.o memory.o project_1.o main.o
 
-all: test
+all: project
 
-test : $(options_o)
-	$(CC) $(options_o) -o test
+project : $(options_o)
+	$(CC) $(options_o) -o project
 
 
 # These are the preprocessed output .i files
@@ -17,8 +17,14 @@ test : $(options_o)
 preprocess : $(options_c)
 	$(CC) $(options_c) -E > file.i
 
-hw1.i : hw1.c
-	$(CC) hw1.c -E > hw1.i
+data.i : data.c
+	$(CC) data.c -E > data.i
+
+memory.i : memory.c
+	$(CC) memory.c -E > memory.i
+
+project_1.i : project_1.c
+	$(CC) project_1.c -E > project_1.i
 
 main.i : main.c
 	$(CC) main.c -E > main.i
@@ -29,10 +35,16 @@ main.i : main.c
 asm-file : $(options_c)
 	$(CC) $(options_c) -S 
 
-hw1.S : hw1.c hw1.h
-	$(CC) hw1.c -S
+data.S : data.c data.h
+	$(CC) data.c -S
 
-main.S : main.c hw1.h
+memory.S : memory.c memory.h
+	$(CC) memory.c -S
+
+project_1.S : project_1.c project_1.h data.h memory.h
+	$(CC) project_1.c -S
+
+main.S : main.c data.h memory.h project_1.h
 	$(CC) main.c -S
 
 
@@ -43,23 +55,25 @@ compile-all : $(options_c)
 
 
 # Individually compiles the .c file and converts it to a .o file 
+# was previously $<
 
 %.o : %.c
-	$(CC) $(CFLAGS) -c $<
-
+	$(CC) $(CFLAGS) -c $^
 
 # Build - compiling and linking
 
 build : $(options_c)
-	$(CC) hw1.c $(CFLAGS)
+	$(CC) data.c $(CFLAGS)
+	$(CC) memory.c $(CFLAGS)
+	$(CC) project_1.c $(CFLAGS)
 	$(CC) main.c $(CFLAGS)
-	$(CC) -o test $(options_o)
+	$(CC) -o project $(options_o)
 
 
 # Connection to beaglebone and uploading the executable
 
 upload: 
-	scp test root@192.168.7.2:/home/
+	scp project root@192.168.7.2:/home/
 
 
 # Creating an archive of my .c files and naming it libproject1.a
@@ -71,4 +85,4 @@ build-lib:
 # Phony targets
 .PHONY : clean
 clean:
-	rm -rf *.o *.map *.i *.s test
+	rm -rf *.o *.map *.i *.s project
