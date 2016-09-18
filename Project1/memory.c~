@@ -21,8 +21,8 @@
 *
 ********************************************************/
 
-#include "memory.h"
-#include "stdint.h"
+#include"memory.h
+#include"stdint.h"
 
 inline void move(uint8_t *src, uint8_t *dst, uint32_t length){            //Move string on successful overlapping validation. Used in memmove
     while(length--)
