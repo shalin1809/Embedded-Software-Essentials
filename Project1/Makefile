@@ -1,10 +1,21 @@
 
-CC = gcc
+include sources.mk
 
+
+# Compiler variables
+CC = gcc
+BBB = arm-linux-gnueabihf-gcc
+FRDM = arm-linux-none
+
+
+# Setting the compiler flags
 CFLAGS = -c -Wall -g -std=c99 -O0
 
-options_c = data.c memory.c main.c project_1.c data.h memory.h project_1.h
-options_o = data.o memory.o project_1.o main.o
+
+# Setting phony targets 
+.PHONY : preprocess data.i memory.i project_1.i main.i asm-file data.S memory.S project_1.S main.S \
+    compile-all compile-all-BBB compile-all-FRDM %.o build build_BBB build_FRDM upload build-lib
+
 
 all: project
 
@@ -50,24 +61,48 @@ main.S : main.c data.h memory.h project_1.h
 
 # Compiling (but not linking) the source code files
 
-compile-all : $(options_c)
+compile-all : $(options_c) $(options_h)
 	$(CC) $(options_c) $(CFLAGS)
+	
+
+compile-all-BBB : $(options_c) $(options_h)
+	$(BBB) $(options_c) $(CFLAGS)
+	
+
+compile-all-FRDM : $(options_c) $(options_h)
+	$(FRDM) $(options_c) $(CFLAGS)
 
 
 # Individually compiles the .c file and converts it to a .o file 
-# was previously $<
 
 %.o : %.c
 	$(CC) $(CFLAGS) -c $^
 
+
 # Build - compiling and linking
 
-build : $(options_c)
+build : $(options_c) $(options_h)
 	$(CC) data.c $(CFLAGS)
 	$(CC) memory.c $(CFLAGS)
 	$(CC) project_1.c $(CFLAGS)
 	$(CC) main.c $(CFLAGS)
 	$(CC) -o project $(options_o)
+	
+	
+build_BBB : $(options_c) $(options_h)
+	$(BBB) data.c $(CFLAGS)
+	$(BBB) memory.c $(CFLAGS)
+	$(BBB) project_1.c $(CFLAGS)
+	$(BBB) main.c $(CFLAGS)
+	$(BBB) -o project $(options_o)
+	
+	
+build_FRDM : $(options_c) $(options_h)
+	$(FRDM) data.c $(CFLAGS)
+	$(FRDM) memory.c $(CFLAGS)
+	$(FRDM) project_1.c $(CFLAGS)
+	$(FRDM) main.c $(CFLAGS)
+	$(FRDM) -o project $(options_o)
 
 
 # Connection to beaglebone and uploading the executable
