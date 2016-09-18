@@ -11,7 +11,7 @@
 *
 *
 *   Authors: Shalin Shah and Snehal Sanghvi
-*   Date Edited: 17 Sept 2016
+*   Date Edited: 18 Sept 2016
 *
 *   Description: Source file for the data manipulation functions
 *               -my_itoa
@@ -45,7 +45,7 @@ int8_t * my_itoa(int8_t *str, int32_t data, int32_t base){
     uint8_t length = 0;         //Calculating length of the string
 
     //If data is negative
-    if (data < 0 && base == 10){
+    if (data < 0){
         neg = -1;
         data = -data;
     }
