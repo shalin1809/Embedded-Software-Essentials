@@ -32,8 +32,8 @@ main.i : main.c
 
 # These are the assembly output .S files
 
-asm-file : $(options_c)
-	$(CC) $(options_c) -S 
+asm-file : data.c memory.c main.c project_1.c
+	$(CC) data.c memory.c main.c project_1.c -S 
 
 data.S : data.c data.h
 	$(CC) data.c -S

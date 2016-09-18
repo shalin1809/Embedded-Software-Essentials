@@ -22,7 +22,7 @@
 #include "project_1.h"
 #include "stdint.h"
 
-int8_t main(){
+int main(){
     project_1_report();
     return 0;
 }

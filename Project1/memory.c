@@ -21,13 +21,10 @@
 *
 ********************************************************/
 
+#include "stdio.h"
 #include "memory.h"
 #include "stdint.h"
 
-inline void move(uint8_t *src, uint8_t *dst, uint32_t length){            //Move string on successful overlapping validation. Used in memmove
-    while(length--)
-        *dst++ = *src;
-}
 
 
 
@@ -38,12 +35,25 @@ my_memmove will copy the values from src to dst for the length of bytes provided
 int8_t my_memmove(uint8_t *src, uint8_t *dst, uint32_t length){   
       
     if(  ( (*(dst+length))  <*src) && (*dst < *src)){       //destination has lower memory than source and does not overlap
-        move(src,dst,length);
+        while(length--)
+            *dst++ = *src;
         return 0;
     }
     else if (   ( (*(src+length)) < *dst)   && ( *src < *dst) ){        //source has lower memory than destination and does not overlap
-       move(src,dst,length);
+       while(length--)
+            *dst++ = *src;
        return 0;
+    }
+    else if( (*src<*dst) && ( (*(src+length)) < *dst)  ){               //source has lower memory than destination and overlaps
+        while(length--)
+            *(dst+length-1) = *(src+length-1);
+        return 0;
+    }
+    else if(  (*(dst+length)  >*src) && (*dst < *src)){                 //destination has lower memory than source and overlaps
+        while(length--)
+            *dst++ = *src++;
+        printf("\n The memory is overlapping, it will overlap the source string");
+        return 0;
     }
     else return 1;                             //Error code for fail
 }
@@ -52,7 +62,7 @@ int8_t my_memmove(uint8_t *src, uint8_t *dst, uint32_t length){
 /* 
 my_memzero will turn all elements of the memory space to '0'
 */
-
+	
 int8_t my_memzero(uint8_t *src, uint32_t length){
     if(*src == '\0')
         return 1;
@@ -64,6 +74,9 @@ int8_t my_memzero(uint8_t *src, uint32_t length){
 /*
 my_reverse reverses all the characters of the string
 */
+
+#define INT_MAX 2147483647
+
 int8_t my_reverse(uint8_t *src, uint32_t length){
     if(length<0) // check for negative length
     return 1;

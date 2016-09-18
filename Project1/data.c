@@ -87,12 +87,12 @@ int8_t * my_itoa(int8_t *str, int32_t data, int32_t base){
 ASCII to integer
 */
 int32_t my_atoi(int8_t *str){
-    if (str == NULL)
+    if (*str == '\0')          //If the string is empty, return integer is '0'
        return 0;
 
     int32_t number = 0;  // Initialize the output number
     int8_t neg = 1;  // For negative values, setting it as positive by default
-    uint8_t i = 0;  // Initialize index of first digit
+    //uint8_t i = 0;  // Initialize index of first digit
 
     // If number is negative, then update sign
     if (*str == '-'){
