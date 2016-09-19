@@ -83,8 +83,9 @@ build : $(options_c) $(options_h)
 	$(CC) project_1.c $(CFLAGS)
 	$(CC) main.c $(CFLAGS)
 	$(CC) -o project $(options_o) $(LINK)
-	size project
-	objdump -f project
+	$(CC) -MM $(options_c) $(options_h) > depfiles    # Generating dependencies for the object files
+	size project                                      # Determining the size of the program
+	objdump -f project                                # Performing object dump  
 	
 	
 build_BBB : $(options_c) $(options_h)
@@ -93,6 +94,9 @@ build_BBB : $(options_c) $(options_h)
 	$(BBB) project_1.c $(CFLAGS)
 	$(BBB) main.c $(CFLAGS)
 	$(BBB) -o project $(options_o)
+	$(CC) -MM $(options_c) $(options_h) > depfiles_BBB # Generating dependencies for the object files for Beaglebone Black
+	size project                                       # Size of project
+
 
 
 build_FRDM : $(options_c) $(options_h)
@@ -101,7 +105,9 @@ build_FRDM : $(options_c) $(options_h)
 	$(FRDM) project_1.c $(CFLAGS)
 	$(FRDM) main.c $(CFLAGS)
 	$(FRDM) -o project $(options_o)
-	
+	$(CC) -MM $(options_c) $(options_h) > depfiles_FRDM # Generating dependencies for the object files for Freedom KL25z
+	size project                                        # Size of project
+
 	
 # Directly invoking Linker - without gcc
 lnk : $(options_c) $(options_h)
