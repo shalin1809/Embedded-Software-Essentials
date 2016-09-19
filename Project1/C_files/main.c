@@ -11,7 +11,7 @@
 *
 *
 *   Authors: Shalin Shah and Snehal Sanghvi
-*   Date Edited: 17 Sept 2016
+*   Date Edited: 18 Sept 2016
 *
 *   Description: Main file for project 1 library
 *
@@ -19,8 +19,15 @@
 ********************************************************/
 
 
-#include "project_1.h"
-#include "stdint.h"
+#ifdef FRDM 
+    #include "project_1_frdm.h"
+#elif  BBB
+    #include "project_1.h"
+#else
+    #include "project_1.h"
+#endif
+
+
 
 int main(){
     project_1_report();
