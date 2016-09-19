@@ -13,10 +13,10 @@ object_directory = Project1/object
 
 output_directory = Project1/output
 
+
+# Setting the path
 VPATH = Project1:../object
 
-
-HEADER_PATH = $(pathsubst %, $(object_directory)/%, $(options_h))
 
 OBJECT_PATH = $(pathsubst %, $(output_directory)/%, $(options_o))
 

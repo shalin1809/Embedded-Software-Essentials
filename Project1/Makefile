@@ -1,6 +1,4 @@
-
 include sources.mk
-
 
 # Compiler variables
 CC = gcc
@@ -8,12 +6,17 @@ BBB = arm-linux-gnueabihf-gcc
 FRDM = arm-none-eabi-gcc
 
 
+# Setting the .c , .o and .h files
 options_c = data.c memory.c main.c project_1.c
 options_h = data.h memory.h project_1.h
 options_o = data.o memory.o project_1.o main.o
 
+
 # Setting the compiler flags
 CFLAGS = -c -Wall -g -std=c99 -O0
+
+# Setting the linker
+LINK = -Wl,-Map=project.map
 
 
 # Setting phony targets 
@@ -28,7 +31,6 @@ project : $(options_o)
 
 
 # These are the preprocessed output .i files
-
 preprocess : $(options_c)
 	$(CC) $(options_c) -E > file.i
 
@@ -46,7 +48,6 @@ main.i : main.c
 
 
 # These are the assembly output .S files
-
 asm-file : data.c memory.c main.c project_1.c
 	$(CC) data.c memory.c main.c project_1.c -S 
 
@@ -64,7 +65,6 @@ main.S : main.c data.h memory.h project_1.h
 
 
 # Compiling (but not linking) the source code files
-
 compile-all : $(options_c) $(options_h)
 	$(CC) $(options_c) $(CFLAGS)
 	
@@ -78,19 +78,17 @@ compile-all-FRDM : $(options_c) $(options_h)
 
 
 # Individually compiles the .c file and converts it to a .o file 
-
 %.o : %.c
 	$(CC) $(CFLAGS) -c $^
 
 
 # Build - compiling and linking
-
 build : $(options_c) $(options_h)
 	$(CC) data.c $(CFLAGS)
 	$(CC) memory.c $(CFLAGS)
 	$(CC) project_1.c $(CFLAGS)
 	$(CC) main.c $(CFLAGS)
-	$(CC) -o project $(options_o)
+	$(CC) -o project $(options_o) $(LINK)
 	size project
 	objdump -f project
 	
@@ -112,7 +110,6 @@ build_FRDM : $(options_c) $(options_h)
 	
 	
 # Directly invoking Linker - without gcc
-
 lnk : $(options_c) $(options_h)
 	$(CC) $(CFLAGS) -c data.c
 	$(CC) $(CFLAGS) -c memory.c
@@ -122,14 +119,12 @@ lnk : $(options_c) $(options_h)
 
 
 
-# Connection to beaglebone and uploading the executable
-
+# Connection to beaglebone and uploading the executable 'project'
 upload: 
 	scp project root@192.168.7.2:/home/
 
 
 # Creating an archive of my .c files and naming it libproject1.a
-
 build-lib:
 	ar -cvq libproject1.a *.c
 
