@@ -2,8 +2,8 @@ include sources.mk
 
 # Compiler variables
 CC = gcc
-BBB = arm-linux-gnueabihf-gcc
-FRDM = arm-none-eabi-gcc
+BBB = arm-linux-gnueabihf-gcc -DBBB 
+FRDM = arm-none-eabi-gcc -DFRDM --specs=nosys.specs 
 
 
 # Setting the .c , .o and .h files
