@@ -5,8 +5,12 @@ include sources.mk
 # Compiler variables
 CC = gcc
 BBB = arm-linux-gnueabihf-gcc
-FRDM = arm-linux-none
+FRDM = arm-none-eabi-gcc
 
+
+options_c = data.c memory.c main.c project_1.c
+options_h = data.h memory.h project_1.h
+options_o = data.o memory.o project_1.o main.o
 
 # Setting the compiler flags
 CFLAGS = -c -Wall -g -std=c99 -O0
@@ -87,6 +91,8 @@ build : $(options_c) $(options_h)
 	$(CC) project_1.c $(CFLAGS)
 	$(CC) main.c $(CFLAGS)
 	$(CC) -o project $(options_o)
+	size project
+	objdump -f project
 	
 	
 build_BBB : $(options_c) $(options_h)
@@ -95,14 +101,25 @@ build_BBB : $(options_c) $(options_h)
 	$(BBB) project_1.c $(CFLAGS)
 	$(BBB) main.c $(CFLAGS)
 	$(BBB) -o project $(options_o)
-	
-	
+
+
 build_FRDM : $(options_c) $(options_h)
 	$(FRDM) data.c $(CFLAGS)
 	$(FRDM) memory.c $(CFLAGS)
 	$(FRDM) project_1.c $(CFLAGS)
 	$(FRDM) main.c $(CFLAGS)
 	$(FRDM) -o project $(options_o)
+	
+	
+# Directly invoking Linker - without gcc
+
+lnk : $(options_c) $(options_h)
+	$(CC) $(CFLAGS) -c data.c
+	$(CC) $(CFLAGS) -c memory.c
+	$(CC) $(CFLAGS) -c project_1.c
+	$(CC) $(CFLAGS) -c main.c
+	ld -o project data.o memory.o project_1.o main.o
+
 
 
 # Connection to beaglebone and uploading the executable
