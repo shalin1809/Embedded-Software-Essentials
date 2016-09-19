@@ -9,6 +9,8 @@ options_h = data.h memory.h project_1.h
 options_o = data.o memory.o project_1.o main.o
 
 
+
+# Setting the directories
 object_directory = Project1/object
 
 output_directory = Project1/output
@@ -20,4 +22,5 @@ VPATH = Project1:../object
 
 OBJECT_PATH = $(pathsubst %, $(output_directory)/%, $(options_o))
 
+HEADER_PATH = $(pathsubst %, $(object_directory)/%, $(options_h))
 

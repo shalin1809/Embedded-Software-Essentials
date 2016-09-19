@@ -6,12 +6,6 @@ BBB = arm-linux-gnueabihf-gcc -DBBB
 FRDM = arm-none-eabi-gcc -DFRDM --specs=nosys.specs 
 
 
-# Setting the .c , .o and .h files
-options_c = data.c memory.c main.c project_1.c
-options_h = data.h memory.h project_1.h
-options_o = data.o memory.o project_1.o main.o
-
-
 # Setting the compiler flags
 CFLAGS = -c -Wall -g -std=c99 -O0
 
