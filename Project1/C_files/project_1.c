@@ -24,11 +24,11 @@
 #define NULL '\0'
 #endif
 
-#include "project_1.h"
 #include "stdio.h"
 #include "stdint.h"
-#include "memory.h"
-#include "data.h"
+#include "../Headers/project_1.h"
+#include "../Headers/memory.h"
+#include "../Headers/data.h"
 
 /*
 Mandatory function required for project report
@@ -79,7 +79,7 @@ void project_1_report(){
         printf("%d",*(aptr_1+count));
     }
     
-    //Testing all the fuctions of the source files
+    //Testing all the functions of the source files
     printf("\n\n\n\n Testing working of all functions");      
     uint8_t TestArray[] = {"HelloWorld"};           //Initialize Test string
     printf("\n Original string:  %s",TestArray);
@@ -130,9 +130,9 @@ void project_1_report(){
     TestData = 0xdeadbeef;                              //Initializing TestData to test endian conversions
     
     TestData = little_to_big(TestData);
-    printf("\nCoverting for little endian to big endian:%x  ",TestData); //Printing little to big endian conversion
+    printf("\nConverting for little endian to big endian:%x  ",TestData); //Printing little to big endian conversion
     
-    printf("\nCoverting for big endian to little endian:%x  ",big_to_little(TestData)); //COnverting big endian back to little endian   
+    printf("\nConverting for big endian to little endian:%x  ",big_to_little(TestData)); //COnverting big endian back to little endian   
     
 }
 

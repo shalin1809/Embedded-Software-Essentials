@@ -29,38 +29,38 @@ preprocess : $(options_c)
 	$(CC) $(options_c) -E > file.i
 
 data.i : data.c
-	$(CC) data.c -E > data.i
+	$(CC) C_files/data.c -E > data.i
 
 memory.i : memory.c
-	$(CC) memory.c -E > memory.i
+	$(CC) C_files/memory.c -E > memory.i
 
 project_1.i : project_1.c
-	$(CC) project_1.c -E > project_1.i
+	$(CC) C_files/project_1.c -E > project_1.i
 
 main.i : main.c
-	$(CC) main.c -E > main.i
+	$(CC) C_files/main.c -E > main.i
 
 
 # These are the assembly output .S files
 asm-file : data.c memory.c main.c project_1.c
-	$(CC) data.c memory.c main.c project_1.c -S 
+	$(CC) $(options_c) -S 
 
 data.S : data.c data.h
-	$(CC) data.c -S
+	$(CC) C_files/data.c -S 
 
 memory.S : memory.c memory.h
-	$(CC) memory.c -S
+	$(CC) C_files/memory.c -S
 
 project_1.S : project_1.c project_1.h data.h memory.h
-	$(CC) project_1.c -S
+	$(CC) C_files/project_1.c -S
 
 main.S : main.c data.h memory.h project_1.h
-	$(CC) main.c -S
+	$(CC) C_files/main.c -S
 
 
 # Compiling (but not linking) the source code files
 compile-all : $(options_c) $(options_h)
-	$(CC) $(options_c) $(CFLAGS)
+	$(CC) $(options_c) $(CFLAGS) $^
 	
 
 compile-all-BBB : $(options_c) $(options_h)
@@ -78,10 +78,10 @@ compile-all-FRDM : $(options_c) $(options_h)
 
 # Build - compiling and linking
 build : $(options_c) $(options_h)
-	$(CC) data.c $(CFLAGS)
-	$(CC) memory.c $(CFLAGS)
-	$(CC) project_1.c $(CFLAGS)
-	$(CC) main.c $(CFLAGS)
+	$(CC) C_files/data.c $(CFLAGS)
+	$(CC) C_files/memory.c $(CFLAGS)
+	$(CC) C_files/project_1.c $(CFLAGS)
+	$(CC) C_files/main.c $(CFLAGS)
 	$(CC) -o project $(options_o) $(LINK)
 	$(CC) -MM $(options_c) $(options_h) > depfiles    # Generating dependencies for the object files
 	size project                                      # Determining the size of the program
@@ -89,10 +89,10 @@ build : $(options_c) $(options_h)
 	
 	
 build_BBB : $(options_c) $(options_h)
-	$(BBB) data.c $(CFLAGS)
-	$(BBB) memory.c $(CFLAGS)
-	$(BBB) project_1.c $(CFLAGS)
-	$(BBB) main.c $(CFLAGS)
+	$(BBB) C_files/data.c $(CFLAGS)
+	$(BBB) C_files/memory.c $(CFLAGS)
+	$(BBB) C_files/project_1.c $(CFLAGS)
+	$(BBB) C_files/main.c $(CFLAGS)
 	$(BBB) -o project $(options_o)
 	$(CC) -MM $(options_c) $(options_h) > depfiles_BBB # Generating dependencies for the object files for Beaglebone Black
 	size project                                       # Size of project
@@ -100,10 +100,10 @@ build_BBB : $(options_c) $(options_h)
 
 
 build_FRDM : $(options_c) $(options_h)
-	$(FRDM) data.c $(CFLAGS)
-	$(FRDM) memory.c $(CFLAGS)
-	$(FRDM) project_1.c $(CFLAGS)
-	$(FRDM) main.c $(CFLAGS)
+	$(FRDM) C_files/data.c $(CFLAGS)
+	$(FRDM) C_files/memory.c $(CFLAGS)
+	$(FRDM) C_files/project_1.c $(CFLAGS)
+	$(FRDM) C_files/main.c $(CFLAGS)
 	$(FRDM) -o project $(options_o)
 	$(CC) -MM $(options_c) $(options_h) > depfiles_FRDM # Generating dependencies for the object files for Freedom KL25z
 	size project                                        # Size of project
@@ -111,10 +111,10 @@ build_FRDM : $(options_c) $(options_h)
 	
 # Directly invoking Linker - without gcc
 lnk : $(options_c) $(options_h)
-	$(CC) $(CFLAGS) -c data.c
-	$(CC) $(CFLAGS) -c memory.c
-	$(CC) $(CFLAGS) -c project_1.c
-	$(CC) $(CFLAGS) -c main.c
+	$(CC) $(CFLAGS) -c C_files/data.c
+	$(CC) $(CFLAGS) -c C_files/memory.c
+	$(CC) $(CFLAGS) -c C_files/project_1.c
+	$(CC) $(CFLAGS) -c C_files/main.c
 	ld -o project data.o memory.o project_1.o main.o
 
 

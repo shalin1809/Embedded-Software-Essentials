@@ -27,11 +27,11 @@
 
 #pragma GCC poison printf
 
-#include "project_1_frdm.h"
 #include "stdio.h"
 #include "stdint.h"
-#include "memory_frdm.h"
-#include "data_frdm.h"
+#include "../Headers/project_1_frdm.h"
+#include "../Headers/memory_frdm.h"
+#include "../Headers/data_frdm.h"
 
 /*
 Mandatory function required for project report

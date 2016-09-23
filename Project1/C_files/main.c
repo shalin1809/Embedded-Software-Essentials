@@ -20,13 +20,12 @@
 
 
 #ifdef FRDM 
-    #include "project_1_frdm.h"
+    #include "../Headers/project_1_frdm.h"
 #elif  BBB
-    #include "project_1.h"
+    #include "../Headers/project_1.h"
 #else
-    #include "project_1.h"
+    #include "../Headers/project_1.h"
 #endif
-
 
 
 int main(){

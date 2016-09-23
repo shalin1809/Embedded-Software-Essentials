@@ -25,8 +25,9 @@
 #pragma GCC poison printf
 
 #include "stdio.h"
-#include "memory_frdm.h"
 #include "stdint.h"
+#include "../Headers/memory_frdm.h"
+
 
 
 

@@ -22,8 +22,8 @@
 ********************************************************/
 
 #include "stdio.h"
-#include "memory.h"
 #include "stdint.h"
+#include "../Headers/memory.h"
 
 
 
@@ -44,7 +44,7 @@ int8_t my_memmove(uint8_t *src, uint8_t *dst, uint32_t length){
             *dst++ = *src++;
        return 0;
     }
-    else if( (src<dst) && ( (src+length) < dst)  ){               //source has lower memory than destination and overlaps
+    else if( (src<dst) && ( (src+length) > dst)  ){               //source has lower memory than destination and overlaps
         while(length--)
             *(dst+length-1) = *(src+length-1);
         printf("\n The memory is overlapping, it will overlap the source string");

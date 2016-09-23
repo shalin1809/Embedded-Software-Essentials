@@ -23,9 +23,11 @@
 *
 ********************************************************/
 
-#include "data.h"
-#include "stdio.h"
-#include "stdint.h"
+
+#include <stdio.h>
+#include <stdint.h>
+#include "../Headers/data.h"
+
 
 /*
 Integer to ASCII (Null terminated string)
