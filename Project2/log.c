@@ -116,10 +116,7 @@ void LOG_0(uint8_t * data, uint8_t len)
 {
 #ifdef VERBOSE	//switch to turn or off the output
 	#ifdef FRDM		//for freedom freescale
-		for (int i=0; i<len; i++){
-			UART0_WriteChar(*data);
-			data++;
-		}
+			UART0_WriteString(data);
 	#endif
 
 	#ifdef BBB		//for Beaglebone Black
