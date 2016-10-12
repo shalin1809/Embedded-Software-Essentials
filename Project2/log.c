@@ -1,13 +1,30 @@
-/*
- * log.c
- *
- *  Created on: 10-Oct-2016
- *      Authors: Snehal Sanghvi and Shalin Shah
- */
+/******************************************************
+*   File: log.c
+*
+*   Copyrights 2016  Snehal Sanghvi and Shalin Shah
+*   All Rights Reserved
+**
+*   The information contained herein is property of the Authors.
+*   The copying and distribution of the files is prohibited except
+*   by express written agreement with the Authors.
+*
+**   Authors: Snehal Sanghvi and Shalin Shah
+*   Date Edited: 12 Oct 2016
+*
+*   Description: Source file for implementing a logger function that is independent
+*               -reverse_string
+*               -my_itoa
+*               -my_ftoa
+*               -LOG_0
+*               -LOG_1
+*               -LOG_2
+*
+********************************************************/
 
 #include <stdio.h>
 #include "log.h"
 #include "uart.h"
+#include <string.h>
 
 
 // reverses a string 'arr' of length 'length'
@@ -97,10 +114,21 @@ void my_ftoa(char *arr, float number, int after_decimal_point)
 // implementing LOG_0 function, which is used to write data bytes onto the terminal
 void LOG_0(uint8_t * data, uint8_t len)
 {
-	for (int i=0; i<len; i++){
-		UART0_WriteChar(*data);
-		data++;
-	}
+#ifdef VERBOSE	//switch to turn or off the output
+	#ifdef FRDM		//for freedom freescale
+		for (int i=0; i<len; i++){
+			UART0_WriteChar(*data);
+			data++;
+		}
+	#endif
+
+	#ifdef BBB		//for Beaglebone Black
+		for(int i=0; i<len; i++){
+			printf("\n\r%c", *data);
+			data++;
+		}
+	#endif
+#endif
 }
 
 
@@ -108,18 +136,44 @@ void LOG_0(uint8_t * data, uint8_t len)
 //the parameter can only be a an integer for this function
 void LOG_1(uint8_t * data, uint8_t len, uint32_t param, uint8_t data_type_size)
 {
-	LOG_0(data, len);
-	char str[50];
-	my_itoa(str, param, 0);
-	LOG_0(str, data_type_size);
+#ifdef VERBOSE	//switch to turn or off the output
+	#ifdef FRDM		//for freedom freescale
+		LOG_0(data, len);
+		char str[20];
+		my_itoa(str, param, 0);
+		uint8_t length = strlen(str);
+		LOG_0(str, length);
+	#endif
+
+	#ifdef BBB
+		for(int i=0;i<len;i++){
+			printf("\n\r%c", *data);
+			data++;
+		}
+		printf(" %d", param);
+	#endif
+#endif
 }
 
 
 //implementing LOG_2 function, which has the same functionality of LOG_1 but the parameter is a floating type
 void LOG_2(uint8_t * data, uint8_t len, float param, uint8_t data_type_size)
 {
-	LOG_0(data, len);
-	char str[50];
-	my_ftoa(str, param, 6);	//6 digits of precision after decimal point
-	LOG_0(str, sizeof(param)); //using sizeof since the size of float maybe different on different architectures
+#ifdef VERBOSE	//switch to turn or off the output
+	#ifdef FRDM		//for freedom freescale
+		LOG_0(data, len);
+		char str[40];
+		my_ftoa(str, param, 6);	//6 digits of precision after decimal point
+		uint8_t length = strlen(str);
+		LOG_0(str, length); //using sizeof since the size of float maybe different on different architectures
+	#endif
+
+	#ifdef BBB
+		for(int i=0; i<len; i++){
+			printf("\n\r%c",*data);
+			data++;
+		}
+		printf(" %.6f",param);
+	#endif
+#endif
 }
