@@ -4,7 +4,7 @@
 #define PWM_OVERFLOW_VALUE 20970u
 
 
-__inline void RED_PWM_init(){
+void RED_PWM_init(){
     SIM_SCGC6 |= 0x04000000;            //Enable clock to TPM2
     SIM_SOPT2 |= 0x01000000;            //Select FLL clock to TPM2
     TPM2_SC = 0x00000000;               //Disable Timer for config
@@ -14,7 +14,7 @@ __inline void RED_PWM_init(){
     TPM2_SC = 0x0000008;                //Set divider as 0, select LPTPM to count on every clock, up counting mode
 }
 
-__inline void GREEN_PWM_init(){
+void GREEN_PWM_init(){
     SIM_SCGC6 |= 0x04000000;            //Enable clock to TPM2
     SIM_SOPT2 |= 0x01000000;            //Select FLL clock to TPM2
     TPM2_SC = 0x00000000;               //Disable Timer for config
@@ -24,7 +24,7 @@ __inline void GREEN_PWM_init(){
     TPM2_SC = 0x0000008;                //Set divider as 0, select LPTPM to count on every clock, up counting mode
 }
 
-__inline void BLUE_PWM_init(){
+void BLUE_PWM_init(){
     SIM_SCGC6 |= 0x01000000;            //Enable clock to TPM0
     SIM_SOPT2 |= 0x01000000;            //Select FLL clock to TPM0
     TPM0_SC = 0x00000000;               //Disable Timer for config

@@ -9,33 +9,56 @@ LEDs are Active Low in configuration. Thus setting the pin high will turn them o
 #include "LED.h"
 #include "uart.h"
 #include "pwm.h"
-#include "log.h"
+#include "Circular_buffer.h"
 
-void delay(int n);
+char c;                                 //Global variable to read or write UART0
+char array[100] = {'\0'};               //Global array to read string UART0
+char byte;
+
+void Control(char a){
+    if(a == 'i')
+        UART0_ReadString(array);
+    else 
+        LED_Control(a);
+}
+
+void UART0_WriteChar(char BYTE){
+    byte = BYTE;
+    UART0_C2 |= 0x00000080;              //Enable transmit interrupt
+    //while(!(UART0->S1 & 0xC0));
+    
+}
 
 int main () {
-   
-    char c = 0;
-    //char array[100] = {'\0'};
+    __disable_irq();
     UART0_init();
     PWM_init();
-    LED_init(); 
-    //while (1) {
-/*        UART0_WriteChar('H');
+    LED_init();
+    __enable_irq();    
+    
+
+    
+    while (1) {
+        UART0_WriteChar('H');
         UART0_WriteChar('e');
         UART0_WriteChar('l');
         UART0_WriteChar('l');
         UART0_WriteChar('o');
-        UART0_WriteString("\r\nWorld");*/
-//        c = UART0_ReadChar();
-//        LED_Control(c);
-    LOG_0("\r\nTesting123,Serial Print Test,no params\r\n", 42);
-    LOG_1("\r\nThis is an integer number: ",32,200,8);
-    LOG_1("\r\nThis is an integer number: ",32,4096,16);
-    LOG_1("\r\nThis is an integer number: ",32,123456,32);
-    LOG_2("\r\nThis is a floating point number: ",35,1543.321, sizeof(1543.321));
+        UART0_WriteString("\n\rWorld 123");
+        
         //UART0_ReadString(array);
         //UART0_WriteString(array);
-    //}
+    }
 }
 
+void UART0_IRQHandler(){
+    if(UART0->S1 & 0x20){
+        c = UART0_D;                            //Interrupt caused by receiver
+        Control(c);
+    }
+    else if (UART0->S1 & 0x80){                 //Interrupt caused by transmitter
+        UART0_D = byte;                         //send a char
+        UART0_C2 &= 0x7F;                       //Clear transmit receive interrupt flag
+        while(!(UART0->S1 & 0x40));             //Wait till transmit receive
+    }
+}

@@ -12,8 +12,9 @@ void UART0_init(void) {
     UART0_BDL = 0x0000000B;             // Select BAUD rate as 115200
     UART0_C4 = 0x0000000F;              // Over Sampling Ratio 16 
     UART0_C1 = 0x00000000;              // Select 8-bit mode 
-    UART0_C2 = 0x0000000C;              // enable transmit and receive
+    UART0_C2 = 0x0000002C;              // enable transmit and receive
     SIM_SCGC5 |= 0x00000200;            // enable clock for PORTA 
+    NVIC->ISER[0] = 0x000001000;        // enable IRQ12 which is for UART0
     PORTA_PCR1 = 0x00000200;            // Select PTA1 as Receive pin
     PORTA_PCR2 = 0x00000200;            // Select PTA2 as Transmit pin
 }
@@ -23,12 +24,14 @@ char UART0_ReadChar(void){
     while(!(UART0->S1 & 0x20)) {}       //wait for receive buffer full
     return UART0_D;                     //Return the read buffer
 }
-
+/*
 
 __inline void UART0_WriteChar(char byte){
-    while(!(UART0->S1 & 0xC0)){}        // Wait till transmit buffer empty and Transmit complete
-    UART0_D = byte;                     // send a char
+    UART0_C2 |= 0x00000080;              //Enable transmit interrupt
+    //while(!(UART0->S1 & 0xC0));
+    
 }
+*/
 
 void UART0_WriteString(char string[]){
     char * str = string;
@@ -43,3 +46,6 @@ void UART0_ReadString(char * str){
         UART0_WriteChar(*str++);                            //Echo the character on the Terminal
     *str = '\0';                                            //End the string with a NULL character
 }
+
+
+

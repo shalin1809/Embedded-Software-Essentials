@@ -26,7 +26,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include "Circular_buffer.h"
  
     
@@ -135,6 +134,7 @@ void destroy(CircBuf_t *circ_ptr)
 void unit_testing(CircBuf_t *buf_ptr){
     uint8_t i = 0;
     uint8_t *buff_address;
+    uint8_t read = 0;
     
     
     printf("STARTING THE CIRCBUFF UNIT TEST SUITE...\n");
@@ -163,8 +163,8 @@ void unit_testing(CircBuf_t *buf_ptr){
     }
     
     //test to read value from an empty buffer
+    
     no_of_tests++;
-    uint8_t read = 0;
     read = remove_item(buf_ptr);
     if(read == 4){
          printf("CB UNIT TEST: 3/10 - <READING ITEM FROM EMPTY BUFFER> ...PASS\n"); 
@@ -307,7 +307,7 @@ void unit_testing(CircBuf_t *buf_ptr){
     professionally.
 
     Formatted or processed versions of this manual, if unaccompanied by
-    the source, must acknowledge the copyright and authors of this work.*/
+    the source, must acknowledge the copyright and authors of this work.
 
     void display_mallinfo(void)
     {
@@ -340,7 +340,9 @@ int main(){
 	
 	//using mallinfo to find information on the current heap allocation
 	printf("\n\nDisplaying information about current memory allocation:\n");
-	display_mallinfo();
+//	display_mallinfo();
   
   	return 0;
 }
+
+*/

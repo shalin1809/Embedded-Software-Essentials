@@ -1,5 +1,6 @@
 #include "MKL25Z4.h"                    // Device header
 #include "LED.h"
+#include "uart.h"
 
 //      COLOR       Value          R G B
 #define OFF         0           // 0 0 0 
@@ -22,7 +23,7 @@ int brightness_value = 5;                   //Integer to store brightness on a s
 int brightness = 0.5*PWM_OVERFLOW_VALUE;    //Integer to store duty cycle for set brightness
 
 void LED_init(){
-    SIM_SCGC5 |= 0x00000400;            // enable clockd to Port B
+    SIM_SCGC5 |= 0x00000400;            // enable clock to Port B
     SIM_SCGC5 |= 0x00001000;            // enable clock to Port D
     PORTB_PCR18 = PORT_PCR_MUX(3);      // set PTB18(red LED) pin as PWM 
     PTB->PDDR |= 0x00040000;            // set PTB18 as output pin 
@@ -250,5 +251,6 @@ void LED_Control(char value){
             }
             LED_SET_COLOR(WHITE);                           //Set the LED to WHITE
             break;
+            
     }
 }
