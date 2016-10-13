@@ -1,3 +1,28 @@
+
+/******************************************************
+*   File: LED.c
+*
+*   Copyrights 2016 Shalin Shah and Snehal Sanghvi 
+*   All Rights Reserved
+*
+*
+*   The information contained herein is property of the Authors. 
+*   The copying and distribution of the files is prohibited except
+*   by express written agreement with the Authors.
+*
+*
+*   Authors: Snehal Sanghvi and Shalin Shah
+*   Date Edited: 12 Oct 2016
+*
+*   Description: Source file for implementing LED functions
+*               -LED_init
+*               -LED_SET_COLOR
+*               -LED_SET_BRIGHTNESS
+*               -LED_Control
+*               
+*
+********************************************************/
+
 #include "MKL25Z4.h"                    // Device header
 #include "LED.h"
 #include "uart.h"
@@ -22,7 +47,7 @@ int color = 0;                              //Integer to store the color number 
 int brightness_value = 5;                   //Integer to store brightness on a scale of 1 to 10
 int brightness = 0.5*PWM_OVERFLOW_VALUE;    //Integer to store duty cycle for set brightness
 
-void LED_init(){
+void LED_init(void){
     SIM_SCGC5 |= 0x00000400;            // enable clock to Port B
     SIM_SCGC5 |= 0x00001000;            // enable clock to Port D
     PORTB_PCR18 = PORT_PCR_MUX(3);      // set PTB18(red LED) pin as PWM 

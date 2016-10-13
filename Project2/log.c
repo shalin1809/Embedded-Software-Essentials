@@ -42,77 +42,87 @@ void reverse_string(char *arr, int length)
 
 
 // integer to ascii converter
-int my_itoa(char arr[], int number, int no_of_digits)
-{
-	int i = 0;
-	int digit = 0;
+char * my_itoa(char *str, uint32_t data, int32_t base){
 
-    //taking care of negative digits
-	if(number<0)
-	{	digit = -1;
-		number = -number;
-	}
+    uint8_t j=0;         //Initializing counter for the loop
+    int8_t temp;
+    uint8_t length = 0;         //Calculating length of the string
+    int8_t neg = 0;    // To check if the number is negative
+    int rem = 0;     //variable to store remainder
+    // If the number is '0'
+    if (data == 0){
+        *str++ = '0';
+        *str-- = '\0';   //Adding null for end of string and resetting str to initial value
+        return str;
+    }
 
-    //dividing the number till it is not 0
-	while (number!=0)
-	{
-		*(arr+i) = (number % 10) + '0';
-		i++;
-		number = number/10;
-	}
+    //If data is negative
+    if (data < 0){
+        neg = -1;
+        data = -data;
+    }
 
-	if(digit==-1){
-		*(arr+i) = '-';
-		i++;
-	}
+    //Dividing with the base to get the value of data in that base and storing it in the string
+    while (data != 0){
+        rem = data % base;
+        *str++ = (rem > 9)? (rem-10) + 'A' : rem + '0';             //Ternary for base values greater than 10.
+        length++;
+        data = data/base;
+    }
 
-	//performing padding manipulations so that the zeros after decimal point are not lost
-	while (i < no_of_digits)
-	{	*(arr+i) = '0';
-		 i++;
-	}
+    // If data is negative adding minus sign
+    if(neg == -1){
+        *str++ = '-';
+        length++;
+    }
 
-    //reversing string so as to print it in correct order
-	reverse_string(arr, i);
-	*(arr+i) = '\0';
-	return i;
+    *str = '\0'; // Append null character for end of string
+
+    // Reverse the string for final output as the loop gives us the last value first
+
+    
+    str = str - length;        //Resetting str to initial value
+    for(j=0;j<length/2;j++){ //loop to reverse string
+        temp=*(str+j);
+        *(str+j) = *(str+length-j-1);
+        *(str+length-j-1)=temp;
+    }
+    return str;
 }
 
 
 // floating point to ascii converter
-void my_ftoa(char *arr, float number, int after_decimal_point)
+void my_ftoa(char * str, float data, uint8_t resolution)
 {
-	// Extract integer part
-	int integer_part = (int)number;
-
-	// Extract floating part
-	float floating_part = number - (float)integer_part;
-
-	// convert integer part to string
-	int i = my_itoa(arr, integer_part, 0);
+    uint8_t length = 0;                         //Initializing length of the string
+    int32_t integer = (int32_t)data;            //Saving the integer part
+    data = data - integer;                      //Now only the decimal part remains in the data
 
 
-	if (after_decimal_point != 0)
-	{
-		*(arr+i) = '.';
+    if(data<0)
+        data = -data;
+    my_itoa(str, integer, 10);                  //Pass the pointer, integer with a default base 10
 
-		// manipulations to implement the power function in math.h
-        int dp = after_decimal_point;
-        int a = 1;
-        while(dp!=0){
-            a = a*10;
-            dp--;
-        }
+    
+    while(*(str+length))                        //Calculate the length of the string excluding the null character
+        ++length;
 
-		floating_part = floating_part * a;
-		my_itoa(arr + i + 1, (int)floating_part, after_decimal_point);
+    /*The string now has the integer part*/
+    str += length;                              //Offsetting the length to end of the integer
+    *str++ = '.';                               //Adding the decimal point
 
-	}
+    while(resolution--){
+        data *= 10;                             //Converting the required decimal resolution to integer
+        if((uint32_t)data == 0)                 //Adding zeros for the zeros before the first non zero number after the decimal
+            *str++ = '0';
+    }
+    my_itoa(str,(uint32_t)data, 10);            //Pass the pointer, decimal part with a default base 1
 }
 
 
+
 // implementing LOG_0 function, which is used to write data bytes onto the terminal
-void LOG_0(uint8_t * data, uint8_t len)
+void LOG_0(char * data, uint8_t len)
 {
 #ifdef VERBOSE	//switch to turn or off the output
 	#ifdef FRDM		//for freedom freescale
@@ -131,15 +141,19 @@ void LOG_0(uint8_t * data, uint8_t len)
 
 //implementing LOG_1 function, which is a concatenation of the LOG_0 functionality with another parameter
 //the parameter can only be a an integer for this function
-void LOG_1(uint8_t * data, uint8_t len, uint32_t param, uint8_t data_type_size)
+void LOG_1(char * data, uint8_t len, uint32_t param, uint8_t data_type_size)
 {
 #ifdef VERBOSE	//switch to turn or off the output
 	#ifdef FRDM		//for freedom freescale
-		LOG_0(data, len);
-		char str[20];
-		my_itoa(str, param, 0);
-		uint8_t length = strlen(str);
-		LOG_0(str, length);
+        uint8_t length;	
+        char str[20] = {'\0'};
+        char fullstr[100] = {'\0'};
+        my_itoa(str, param, 10);
+		length = strlen(str);
+        strcat(fullstr,data);
+        strcat(fullstr,str);
+        length = strlen(fullstr);
+		LOG_0(fullstr, length);
 	#endif
 
 	#ifdef BBB
@@ -154,15 +168,18 @@ void LOG_1(uint8_t * data, uint8_t len, uint32_t param, uint8_t data_type_size)
 
 
 //implementing LOG_2 function, which has the same functionality of LOG_1 but the parameter is a floating type
-void LOG_2(uint8_t * data, uint8_t len, float param, uint8_t data_type_size)
+void LOG_2(char * data, uint8_t len, float param, uint8_t data_type_size)
 {
 #ifdef VERBOSE	//switch to turn or off the output
 	#ifdef FRDM		//for freedom freescale
-		LOG_0(data, len);
-		char str[40];
+		uint8_t length;
+        char str[40] = {'\0'};  
+        char fullstr[150] = {'\0'};
+        strcat(fullstr,data);
 		my_ftoa(str, param, 6);	//6 digits of precision after decimal point
-		uint8_t length = strlen(str);
-		LOG_0(str, length); //using sizeof since the size of float maybe different on different architectures
+		strcat(fullstr,str);
+        length = strlen(fullstr);
+		LOG_0(fullstr, length); //using sizeof since the size of float maybe different on different architectures
 	#endif
 
 	#ifdef BBB
@@ -171,6 +188,36 @@ void LOG_2(uint8_t * data, uint8_t len, float param, uint8_t data_type_size)
 			data++;
 		}
 		printf(" %.6f",param);
+	#endif
+#endif
+}
+
+
+void LOG_cat(char * data, uint8_t len, uint32_t param, uint8_t data_type_size)
+{
+#ifdef VERBOSE	//switch to turn or off the output
+	#ifdef FRDM		//for freedom freescale
+        uint8_t length;	
+        char str[20] = {'\0'};
+        char fullstr[100] = {'\0'};
+        UART0_WriteString("Before Concatenation");
+        LOG_0(data, len);
+        my_itoa(str, param, 10);
+		length = strlen(str);
+		LOG_0(str, length);
+        strcat(fullstr,data);
+        strcat(fullstr,str);
+        UART0_WriteString("After Concatenation");
+        length = strlen(fullstr);
+		LOG_0(fullstr, length);
+	#endif
+
+	#ifdef BBB
+		for(int i=0;i<len;i++){
+			printf("\n\r%c", *data);
+			data++;
+		}
+		printf(" %d", param);
 	#endif
 #endif
 }

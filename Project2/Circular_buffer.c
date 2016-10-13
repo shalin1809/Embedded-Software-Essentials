@@ -28,7 +28,9 @@
 #include <stdlib.h>
 #include "Circular_buffer.h"
  
-    
+uint8_t Rarray[50];
+uint8_t Tarray[50];
+
 uint8_t no_of_tests = 0;
 uint8_t pass = 0;
 uint8_t fail = 0;
@@ -61,7 +63,7 @@ enum bufferStates add_item(CircBuf_t *circ_ptr, uint8_t item){
         //printf("\nCannot add any more elements! Buffer is full.\n");
 		return Buffer_Full_Error;                                    
     }
-	circ_ptr -> count ++;							    // incrementing the number of elements
+	circ_ptr->count += 1;							    // incrementing the number of elements
 
 	if(circ_ptr->head == (circ_ptr -> buff + (circ_ptr -> size -1))){
 	    circ_ptr -> head = circ_ptr -> buff;            // so that we wrap around after the last element
@@ -95,31 +97,36 @@ uint8_t remove_item(CircBuf_t *circ_ptr){
 
 
 // This function initializes the buffer, allocates memory and returns a pointer to the allocated heap
-uint8_t  *initialize_Buffer(CircBuf_t *circ_ptr)
+void initialize_Buffer(CircBuf_t *circ_ptr, uint8_t type)
 {   
     if (circ_ptr != NULL) {
         // initializations
+        if (type == 0)
+            circ_ptr -> buff = Rarray;
+        else
+            circ_ptr -> buff = Tarray;
         circ_ptr -> count  = 0;
-        circ_ptr -> buff = NULL; 
         circ_ptr -> size = MAX_SIZE;
         
         // allocating memory to the buffer
-        circ_ptr -> buff = (uint8_t *)malloc(sizeof(uint8_t) * (circ_ptr -> size));
+        
         
         //checking for successful memory allocation
         if(circ_ptr -> buff == NULL){
-            printf("\nError : Expected memory allocation is bigger than expected.\n");
-            return NULL;
+            //printf("\nError : Expected memory allocation is bigger than expected.\n");
+            //return NULL;
         }
         else{
             circ_ptr -> head = circ_ptr -> buff;
             circ_ptr -> tail = circ_ptr -> buff;   
-             return (circ_ptr -> buff); 
+            //return (circ_ptr -> buff); 
         }  
    }
 }
 
-
+void create(CircBuf_t * circ_ptr, uint16_t length){
+    circ_ptr->buff = malloc (length *sizeof(uint16_t));
+}
 // This function frees up the circular buffer from dynamic memory
 void destroy(CircBuf_t *circ_ptr)
 {
@@ -132,6 +139,7 @@ void destroy(CircBuf_t *circ_ptr)
 
 // Writing unit tests for all modules
 void unit_testing(CircBuf_t *buf_ptr){
+ 
     uint8_t i = 0;
     uint8_t *buff_address;
     uint8_t read = 0;
@@ -140,7 +148,7 @@ void unit_testing(CircBuf_t *buf_ptr){
     printf("STARTING THE CIRCBUFF UNIT TEST SUITE...\n");
     
     // Testing if initialization and allocation was successful
-    buff_address = initialize_Buffer(buf_ptr);
+//    buff_address = initialize_Buffer(buf_ptr);
     no_of_tests++;
     if (buff_address == NULL){
         printf("CB UNIT TEST: 1/10 - <INITIALIZE AND ALLOCATE> ...FAIL\n");
@@ -283,66 +291,3 @@ void unit_testing(CircBuf_t *buf_ptr){
 
 
 
- /* Defining the display_mallinfo() function to display information about the heap allocation. This has been looked up from http://man7.org/linux/man-pages/man3/mallinfo.3.html and hence the copyright information below */
- 
- /* Copyright (c) 2012 by Michael Kerrisk <mtk.manpages@gmail.com>
-
-    License for mallinfo.3:
-
-    Permission is granted to make and distribute verbatim copies of this
-    manual provided the copyright notice and this permission notice are
-    preserved on all copies.
-
-    Permission is granted to copy and distribute modified versions of this
-    manual under the conditions for verbatim copying, provided that the
-    entire resulting derived work is distributed under the terms of a
-    permission notice identical to this one.
-
-    Since the Linux kernel and libraries are constantly changing, this
-    manual page may be incorrect or out-of-date.  The author(s) assume no
-    responsibility for errors or omissions, or for damages resulting from
-    the use of the information contained herein.  The author(s) may not
-    have taken the same level of care in the production of this manual,
-    which is licensed free of charge, as they might when working
-    professionally.
-
-    Formatted or processed versions of this manual, if unaccompanied by
-    the source, must acknowledge the copyright and authors of this work.
-
-    void display_mallinfo(void)
-    {
-           struct mallinfo mi;
-           mi = mallinfo();
-
-           printf("Total non-mmapped bytes (arena):       %d\n", mi.arena);
-           printf("# of free chunks (ordblks):            %d\n", mi.ordblks);
-           printf("# of free fastbin blocks (smblks):     %d\n", mi.smblks);
-           printf("# of mapped regions (hblks):           %d\n", mi.hblks);
-           printf("Bytes in mapped regions (hblkhd):      %d\n", mi.hblkhd);
-           printf("Max. total allocated space (usmblks):  %d\n", mi.usmblks);
-           printf("Free bytes held in fastbins (fsmblks): %d\n", mi.fsmblks);
-           printf("Total allocated space (uordblks):      %d\n", mi.uordblks);
-           printf("Total free space (fordblks):           %d\n", mi.fordblks);
-           printf("Topmost releasable block (keepcost):   %d\n", mi.keepcost);
-    }
-
-
-
-// calling the unit tests function in the main
-int main(){
-
-	CircBuf_t buf;			    // creating a structure instance
-	CircBuf_t *buf_ptr = &buf;  // creating a pointer to structure instance
-	
-	#ifdef UNIT_TESTS
-	unit_testing(buf_ptr);      // testing all modules (unit testing)
-	#endif
-	
-	//using mallinfo to find information on the current heap allocation
-	printf("\n\nDisplaying information about current memory allocation:\n");
-//	display_mallinfo();
-  
-  	return 0;
-}
-
-*/

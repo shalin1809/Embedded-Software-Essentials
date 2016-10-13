@@ -23,10 +23,14 @@
 *
 ********************************************************/
 
-#ifndef _CIRCULAR_BUFFER
-#define _CIRCULAR_BUFFER
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
 
-#define MAX_SIZE 5
+#ifndef _CIRCULAR_BUFFER_H
+#define _CIRCULAR_BUFFER_H
+
+#define MAX_SIZE 50
 
 //declaring the structure and its fields
 typedef struct CircBuf
@@ -55,8 +59,11 @@ enum bufferStates add_item(CircBuf_t *circ_ptr, uint8_t item);
 //This function takes in a pointer to structure and returns the popped value 
 uint8_t remove_item(CircBuf_t *circ_ptr);
 
-// This function initializes the buffer, allocates memory and returns a pointer to the allocated heap
-uint8_t  *initialize_Buffer(CircBuf_t *circ_ptr);
+// This function initializes the buffer
+void initialize_Buffer(CircBuf_t *circ_ptr, uint8_t buffsize);
+
+//This fuction allocates memory to the buffer
+void create(CircBuf_t * circ_ptr, uint16_t length);
 
 // This function frees up the circular buffer from dynamic memory
 void destroy(CircBuf_t *circ_ptr);
