@@ -39,6 +39,7 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
+#include "profiler.h"
 #include <string.h>
 
 uint16_t overflow_counts=0;
