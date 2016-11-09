@@ -11,15 +11,12 @@
 *
 *
 *   Authors: Shalin Shah and Snehal Sanghvi
-*   Date Edited: 11 Nov 2016
+*   Date Edited: 9 Nov 2016
 *
-*   Description: Source file for implementing Circular buffer functions
-*               -is_Buffer_empty 
-*               -is_Buffer_full
-*               -add_item
-*               -remove_item
-*               -initialize_Buffer
-*               -destroy
+*   Description: Header file for messaging using Circular buffer
+*               -decode_message
+*               -ack_nack
+*               -checksum_validate
 *
 ********************************************************/
 #ifndef _MESSAGING_H
@@ -34,10 +31,7 @@
 
 #define MAX_DATA_LENGTH 20
 
-//extern CircBuf_t *rx_buffer;
-//extern CircBuf_t *tx_buffer;
-
-
+/*Enumerating commmands which can be sent or received*/
 typedef enum CMDS_t{
     LED_TOGGLE = 1,
     BRIGHTNESS = 2,
@@ -45,6 +39,8 @@ typedef enum CMDS_t{
     NACK = 4
 }CMDS;
 
+
+/*Struct of the command to be sent or received*/
 typedef struct Message_t{
     CMDS Command;
     uint8_t length;
@@ -54,6 +50,7 @@ typedef struct Message_t{
 
 Message message;
 
+/*Enumerating brightness values*/
 typedef enum Brightness {		
 	TEN_PERCENT = 1,
 	TWENTY_PERCENT = 2,
@@ -68,18 +65,20 @@ typedef enum Brightness {
 }Brightness_t;
 
 
+/*Enumerating the errors for messaging*/
 typedef enum ERR_t {
 	CHKSUM_FAIL = 1,
 	CHKSUM_PASS = 2
 }ERR;
 
 
+/* Function to decode the incoming message packet*/
 void decode_message (void);
 
-
+/*Function to send acknowledge after the message is received*/
 void ack_nack (CMDS packet);
 
-
+/*Function to validate the checksum at the end of each message using addition algorithm*/
 ERR checksum_validate (void);
 
 #endif
