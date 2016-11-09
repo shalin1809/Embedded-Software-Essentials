@@ -20,6 +20,7 @@
 *		SPI_rx_byte
 *
 ********************************************************/
+
 #include "MKL25Z4.h"
 #include "spi.h"
 #include <stdint.h>
@@ -37,17 +38,16 @@ void SPI_init(void){
 	PORTC_PCR5 |= PORT_PCR_MUX(2);			//Select Alternate function 2 for SPI0_SCK
 	PORTC_PCR6 |= PORT_PCR_MUX(2); 			//Select Alternate function 2 for SPI0_MOSI
 	PORTC_PCR7 |= PORT_PCR_MUX(2); 			//Select Alternate function 2 for SPI0_MISO
+	PORTC_PCR3 |= PORT_PCR_MUX(1);			//For CE pin
 
 	//configuring the ss pin
 	PTC->PDDR |= 0x10;                      //selecting the ss pin as output (---- 1---)
-	PTC->PSOR = 0x10;						//making the ss pin high (or idle, since its active low)
+	PTC->PSOR = 0x10;			//making the ss pin high (or idle, since its active low)
 
-	//Selecting master mode for the SPI on MCU and setting CPHA to 1
-	SPI0->C1 |= SPI_C1_MSTR_MASK | SPI_C1_CPHA_MASK;
+	//Selecting master mode for the SPI on MCU
+	SPI0->C1 |= SPI_C1_MSTR_MASK;
 
-	//enabling dma transfers
-	//SPI_C2 = SPI_C2_TXDMAE_MASK | SPI_C2_RXDMAE_MASK;
-	//SPI0->C2 = SPI_C2_SPC0_MASK | SPI_C2_BIDIROE_MASK;
+	SPI0->C2 = 0x00;
 
 	//setting a baud rate divisor of 4
 	SPI0->BR = SPI_BR_SPR(1);
@@ -58,43 +58,33 @@ void SPI_init(void){
 
 
 //function to return status of SPI
-uint8_t SPI_status(void) {
+uint8_t SPI_status() {
 	return SPI0->S;
 }
 
 
+//function to re-initialize the spi module
+void SPI_flush()
+{
+	//disable the SPI module by making SPE=0
+	SPI0_C1 &= 0xBF;
+	//Call the initialization function
+	SPI_init();
+}
+
+
 //transmitting a byte
-uint8_t SPI_tx_byte(unsigned char byte){
-	uint8_t temp;
-	PTC->PCOR |= 0x10;   //clearing the ss bit to drive it low
+uint8_t SPI_write_read_byte(unsigned char byte){
+	unsigned char temp;
 
 	//waiting for transmit buffer to become empty
-	while(!(SPI_status() & 0x20)){};
-	SPI0->D = byte;
+	while(!(SPI_status() & SPI_S_SPTEF_MASK)){};
+	SPI0_D = byte; //writing the character to data register
 
 	//waiting for data to become available in the receive buffer
-	while(!(SPI_status() & 0x80)){};
-	temp = SPI0->D;   //clears SPRF
+	while(!(SPI_status() & SPI_S_SPRF_MASK)){};
+	temp = SPI0_D;   //clears SPRF
 
-	PTC->PSOR |= 0x10;	 //setting the ss bit high
 	return temp;
 }
 
-
-//receiving a byte
-uint8_t SPI_rx_byte(){
-	uint8_t read_value;
-	PTC->PCOR |= 0x10;   //clearing the ss bit to drive it low
-
-	//waiting for transmit buffer to become empty
-	while(!(SPI_status() & 0x20)){};
-	SPI0_D = 0xFF;
-
-	//waiting for data to become available in the receive buffer
-	while(!(SPI_status() & 0x80)){};
-	read_value = SPI0->D;
-
-	PTC->PSOR |= 0x10;	 //setting the ss bit high
-	return read_value;
-
-}
