@@ -1,10 +1,31 @@
-/*
- * nRF24L01.h
- *
- *  Created on: 30-Oct-2016
- *      Author: Snehal Sanghvi
- */
-
+/********************************************
+*   File: nordic.h
+*
+*   Copyrights 2016 Snehal Sanghvi and Shalin Shah
+*   All Rights Reserved
+*
+*   The information contained herein is property of the Authors.
+*   The copying and distribution of the files is prohibited except
+*   by express written agreement with the Authors.
+*
+*
+*   Author: Snehal Sanghvi and Shalin Shah
+*   Date Edited: 9 Nov 2016
+*
+*   Description: Header file for testing the NORDIC NRF24L01+ chip
+*   			
+*   		NORDIC_Write
+*		NORDIC_Config
+*		CE_High
+*		CE_Low
+*		NORDIC_Write_Multiple
+*		NORDIC_Get_Status
+*		NORDIC_RF_Setup
+*		NORDIC_TX_Payload
+*		NORDIC_TX_Flush
+*		NORDIC_RX_Flush
+*
+********************************************************/
 #ifndef INCLUDES_NRF24L01_H_
 #define INCLUDES_NRF24L01_H_
 #include <stdint.h>

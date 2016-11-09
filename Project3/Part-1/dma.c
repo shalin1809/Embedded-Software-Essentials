@@ -9,8 +9,8 @@
 *   by express written agreement with the Authors.
 *
 *
-*   Author: Snehal Sanghvi
-*   Date Edited: 5 Nov 2016
+*   Author: Snehal Sanghvi and Shalin Shah
+*   Date Edited: 9 Nov 2016
 *
 *   Description: Source file for testing the timing of various functions
 *   			on the Freedom Freescale KL25z and transferring data using DMA

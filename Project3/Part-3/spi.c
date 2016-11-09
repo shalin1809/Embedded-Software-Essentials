@@ -1,10 +1,25 @@
-/*
- * spi.c
- *
- *  Created on: 29-Oct-2016
- *      Author: Snehal Sanghvi
- */
-
+/********************************************
+*   File: spi.c
+*
+*   Copyrights 2016 Snehal Sanghvi and Shalin Shah
+*   All Rights Reserved
+*
+*   The information contained herein is property of the Authors.
+*   The copying and distribution of the files is prohibited except
+*   by express written agreement with the Authors.
+*
+*
+*   Author: Snehal Sanghvi and Shalin Shah
+*   Date Edited: 9 Nov 2016
+*
+*   Description: Source file for SPI drivers
+*   		
+*		SPI_init
+*		SPI_tx_byte
+*		SPI_status
+*		SPI_rx_byte
+*
+********************************************************/
 #include "MKL25Z4.h"
 #include "spi.h"
 #include <stdint.h>
