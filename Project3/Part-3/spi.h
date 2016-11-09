@@ -15,9 +15,9 @@
 *   Description: Header file for SPI drivers
 *   		
 *		SPI_init
-*		SPI_tx_byte
+*		SPI_write_read_byte
 *		SPI_status
-*		SPI_rx_byte
+*		SPI_flush
 *
 ********************************************************/
 
@@ -29,12 +29,13 @@
 void SPI_init(void);
 
 //routine to transmit byte
-uint8_t SPI_tx_byte(unsigned char byte);
+uint8_t SPI_write_read_byte(unsigned char byte);
 
 //routine to return status of SPI
 uint8_t SPI_status(void);
 
-//routine to receive byte
-uint8_t SPI_rx_byte(void);
+//function to re-initialize the spi module
+void SPI_flush(void);
+
 
 #endif /* INCLUDES_SPI_H_ */
