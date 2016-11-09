@@ -100,7 +100,10 @@ void Control(char a){
         UART0_WriteString(array);
     }
     else if (a == 'm'){
+        UART0_WriteString("\n\rMessaging mode");
+        //__disable_irq();
         decode_message();
+        //__enable_irq();
     }
     else 
         LED_Control(a);

@@ -22,12 +22,12 @@
 *               -destroy
 *
 ********************************************************/
-#ifndef MESSAGING_H_
-#define MESSAGING_H_
+#ifndef _MESSAGING_H
+#define _MESSAGING_H
 
 #include "stdint.h"
 #include "LED.h"
-#include "UART.h"
+#include "uart.h"
 #include "Circular_buffer.h"
 #include "log.h"
 

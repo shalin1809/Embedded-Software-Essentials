@@ -28,12 +28,12 @@
 *
 *****************************************************/
 
-#ifndef LED_H_
-#define LED_H_
+#ifndef _LED_H
+#define _LED_H
 
 
 #include "MKL25Z4.h" 
-#include "uart.h"
+
 
 
 //      COLOR       Value          R G B

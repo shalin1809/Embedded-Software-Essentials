@@ -22,8 +22,8 @@
 *
 ********************************************************/
 
-#ifndef PWM_H_
-#define PWM_H_
+#ifndef _PWM_H
+#define _PWM_H
 
 #include "MKL25Z4.h"    
 

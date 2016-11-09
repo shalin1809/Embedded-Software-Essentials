@@ -25,14 +25,14 @@
 *
 ********************************************************/
 
-#ifndef UART_H_
-#define UART_H_
+#ifndef _UART_H
+#define _UART_H
 
 #include "MKL25Z4.h"
 #include "LED.h"
 #include "pwm.h"
 #include "Circular_buffer.h"
-#include "messaging.h"
+//#include "messaging.h"
 
 //extern CircBuf_t *rx_buffer;
 //extern CircBuf_t *tx_buffer;

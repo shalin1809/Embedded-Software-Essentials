@@ -137,50 +137,62 @@ void LED_SET_BRIGHTNESS(int BRIGHTNESS){
     switch(brightness_value){
         case 0:
             brightness = 0.001*PWM_OVERFLOW_VALUE;      //Set brightness to 0 percent
+            LED_SET_COLOR(color);
             break;
         
         case 1:
             brightness = 0.1*PWM_OVERFLOW_VALUE;    //Set brightness to 10 percent
+            LED_SET_COLOR(color);
             break;
         
         case 2:
             brightness = 0.2*PWM_OVERFLOW_VALUE;    //Set brightness to 20 percent
+            LED_SET_COLOR(color);
             break;
         
         case 3:
             brightness = 0.3*PWM_OVERFLOW_VALUE;    //Set brightness to 30 percent
+            LED_SET_COLOR(color);
             break;
         
         case 4:
             brightness = 0.4*PWM_OVERFLOW_VALUE;    //Set brightness to 40 percent
+            LED_SET_COLOR(color);
             break;
         
         case 5:
             brightness = 0.5*PWM_OVERFLOW_VALUE;    //Set brightness to 50 percent
+            LED_SET_COLOR(color);
             break;
         
         case 6:
             brightness = 0.6*PWM_OVERFLOW_VALUE;    //Set brightness to 60 percent
+            LED_SET_COLOR(color);
             break;
         
         case 7:
             brightness = 0.7*PWM_OVERFLOW_VALUE;    //Set brightness to 70 percent
+            LED_SET_COLOR(color);
             break;
         
         case 8:
             brightness = 0.8*PWM_OVERFLOW_VALUE;    //Set brightness to 80 percent
+            LED_SET_COLOR(color);
             break;
         
         case 9:
             brightness = 0.9*PWM_OVERFLOW_VALUE;    //Set brightness to 90 percent
+            LED_SET_COLOR(color);
             break;
         
         case 10:
             brightness = 1*PWM_OVERFLOW_VALUE;    //Set brightness to 100 percent
+            LED_SET_COLOR(color);
             break;
         
         default:
             brightness = 0.5*PWM_OVERFLOW_VALUE;    //Set brightness to 50 percent
+            LED_SET_COLOR(color);
             break;
     }
 }

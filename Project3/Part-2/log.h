@@ -21,11 +21,13 @@
 *
 ********************************************************/
 
-#ifndef INCLUDES_LOG_H_
-#define INCLUDES_LOG_H_
+#ifndef _INCLUDES_LOG_H
+#define _INCLUDES_LOG_H
+
 
 #include <stdint.h>
 #include "uart.h"
+
 
 // reverses a string 'arr' of length 'length'
 void reverse_string(char *arr, int length);
