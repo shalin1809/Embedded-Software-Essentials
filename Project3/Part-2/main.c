@@ -1,9 +1,21 @@
-/***************************************************
-
-
-LEDs are Active Low in configuration. Thus setting the pin high will turn them off
-
-*****************************************************/
+/******************************************************
+*   File: main.c
+*
+*   Copyrights 2016  Snehal Sanghvi and Shalin Shah
+*   All Rights Reserved
+**
+*   The information contained herein is property of the Authors.
+*   The copying and distribution of the files is prohibited except
+*   by express written agreement with the Authors.
+*
+**   Authors: Snehal Sanghvi and Shalin Shah
+*   Date Edited: 11 Nov 2016
+*
+*   Description: Main function to test the functionality of the module
+*               
+*               LEDs are Active Low in configuration. Thus setting the pin high will turn them off
+*
+********************************************************/
 
 
 #include "MKL25Z4.h"                    // Device header
@@ -34,12 +46,7 @@ int main () {
     LED_init();
     __enable_irq();    
     
-    UART0_WriteString("Testing concatenation strings");
-    LOG_cat("\r\nThis is an integer number: ",32,200,8);
-    LOG_0("\r\nTesting123,Serial Print Test,no params", 42);
-    LOG_1("\r\nThis is an integer number: ",32,4096,16);
-    LOG_1("\r\nThis is an integer number: ",32,123456,32);
-    LOG_2("\r\nThis is a floating point number: ",35,1543.321, 32);
+    UART0_WriteString("Board running");
     
     while (1) {
         Control(remove_item(rx_buffer));
