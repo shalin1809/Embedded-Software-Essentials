@@ -15,12 +15,11 @@
 *   Description: Source file for SPI drivers
 *   		
 *		SPI_init
-*		SPI_tx_byte
+*		SPI_write_read_byte
 *		SPI_status
-*		SPI_rx_byte
+*		SPI_flush
 *
 ********************************************************/
-
 #include "MKL25Z4.h"
 #include "spi.h"
 #include <stdint.h>
@@ -41,11 +40,12 @@ void SPI_init(void){
 	PORTC_PCR3 |= PORT_PCR_MUX(1);			//For CE pin
 
 	//configuring the ss pin
-	PTC->PDDR |= 0x10;                      //selecting the ss pin as output (---- 1---)
-	PTC->PSOR = 0x10;			//making the ss pin high (or idle, since its active low)
+	PTC->PDDR |= 0x10;                      //selecting the ss pin as output (---1 ----)
+	PTC->PSOR = 0x10;						//making the ss pin high (or idle, since its active low)
 
 	//Selecting master mode for the SPI on MCU
 	SPI0->C1 |= SPI_C1_MSTR_MASK;
+	SPI0->C1 &= ~SPI_C1_CPHA_MASK;
 
 	SPI0->C2 = 0x00;
 
@@ -73,18 +73,19 @@ void SPI_flush()
 }
 
 
-//transmitting a byte
+//transmitting and receiving a byte
 uint8_t SPI_write_read_byte(unsigned char byte){
-	unsigned char temp;
+	unsigned char temp = 0;
 
 	//waiting for transmit buffer to become empty
-	while(!(SPI_status() & SPI_S_SPTEF_MASK)){};
-	SPI0_D = byte; //writing the character to data register
+	while(!(SPI_status() & 0x20));
+	SPI0->D = byte; //writing the character to data register
 
 	//waiting for data to become available in the receive buffer
-	while(!(SPI_status() & SPI_S_SPRF_MASK)){};
+	while(!(SPI_status() & 0x80));
 	temp = SPI0_D;   //clears SPRF
 
 	return temp;
 }
+
 
