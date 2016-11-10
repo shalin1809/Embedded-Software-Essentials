@@ -26,16 +26,15 @@
 *		NORDIC_RX_Flush
 *
 ********************************************************/
+
 #ifndef INCLUDES_NRF24L01_H_
 #define INCLUDES_NRF24L01_H_
 #include <stdint.h>
 
-#define NORDIC_BASE                                				(0x00)
-#define NORDIC									(Nordic_struct *)NORDIC_BASE
-#define NORDIC_BASE_PTR								(NORDIC)
-
 #define __IO volatile
 
+#define NORDIC_CS_ENABLE()  (PTC->PCOR |= 0x10)  //clearing the ss bit to drive it low
+#define NORDIC_CS_DISABLE() (PTC->PSOR |= 0x10)  //setting the ss bit to drive it high
 
 // SPI Command Names
 #define NORDIC_R_REGISTER     (0x00)		//Read command and status registers. AAAAA = 5 bit register map address. 1-5 data bytes, LSByte first
@@ -48,95 +47,33 @@
 #define NORDIC_NOP            (0xFF)		//No operation. 0 data bytes
 
 
-// structure containing all the registers
-typedef struct {
-__IO  uint8_t NORDIC_CONFIG_ADDR;
-__IO  uint8_t NORDIC_EN_AA_ADDR;
-__IO  uint8_t NORDIC_EN_RXADDR_ADDR;
-__IO  uint8_t NORDIC_SETUP_AW_ADDR;
-__IO  uint8_t NORDIC_SETUP_RETR_ADDR;
-__IO  uint8_t NORDIC_RF_CH_ADDR;
-__IO  uint8_t NORDIC_RF_SETUP_ADDR;
-__IO  uint8_t NORDIC_STATUS_ADDR;
-__I   uint8_t NORDIC_OBSERVE_TX_ADDR;
-__I   uint8_t NORDIC_CD_ADDR;
-__IO  uint8_t NORDIC_RX_ADDR_P0_ADDR;
-__IO  uint8_t NORDIC_RX_ADDR_P1_ADDR;
-__IO  uint8_t NORDIC_RX_ADDR_P2_ADDR;
-__IO  uint8_t NORDIC_RX_ADDR_P3_ADDR;
-__IO  uint8_t NORDIC_RX_ADDR_P4_ADDR;
-__IO  uint8_t NORDIC_RX_ADDR_P5_ADDR;
-__IO  uint8_t NORDIC_TX_ADDR_ADDR;
-__IO  uint8_t NORDIC_RX_PW_P0_ADDR;
-__IO  uint8_t NORDIC_RX_PW_P1_ADDR;
-__IO  uint8_t NORDIC_RX_PW_P2_ADDR;
-__IO  uint8_t NORDIC_RX_PW_P3_ADDR;
-__IO  uint8_t NORDIC_RX_PW_P4_ADDR;
-__IO  uint8_t NORDIC_RX_PW_P5_ADDR;
-__IO  uint8_t NORDIC_FIFO_STATUS_ADDR;
-	  uint8_t RESERVED_0[5];
-__IO  uint8_t NORDIC_DYNPD_ADDR;
-__IO  uint8_t NORDIC_FEATURE_ADDR;
-} Nordic_struct, *MemMapPtr;
-
-
-
-// Memory Map - register address defines
-
-#define NORDIC_CONFIG_REG(base)                    		 ((base)->NORDIC_CONFIG_ADDR)
-#define NORDIC_EN_AA_REG(base)       				 ((base)->NORDIC_EN_AA_ADDR)
-#define NORDIC_EN_RXADDR_REG(base)   				 ((base)->NORDIC_EN_RXADDR_ADDR)
-#define NORDIC_SETUP_AW_REG(base)   				 ((base)->NORDIC_SETUP_AW_ADDR)
-#define NORDIC_SETUP_RETR_REG(base)  				 ((base)->NORDIC_SETUP_RETR_ADDR)
-#define NORDIC_RF_CH_REG(base)       				 ((base)->NORDIC_RF_CH_ADDR)
-#define NORDIC_RF_SETUP_REG(base)    				 ((base)->NORDIC_RF_SETUP_ADDR)
-#define NORDIC_STATUS_REG(base)    				 ((base)->NORDIC_STATUS_ADDR)
-#define NORDIC_OBSERVE_TX_REG(base) 				 ((base)->NORDIC_OBSERVE_TX_ADDR)
-#define NORDIC_CD_REG(base)    	   				 ((base)->NORDIC_CD_ADDR)
-#define NORDIC_RX_ADDR_P0_REG(base) 				 ((base)->NORDIC_RX_ADDR_P0_ADDR)
-#define NORDIC_RX_ADDR_P1_REG(base)  				 ((base)->NORDIC_RX_ADDR_P1_ADDR)
-#define NORDIC_RX_ADDR_P2_REG(base)  				 ((base)->NORDIC_RX_ADDR_P2_ADDR)
-#define NORDIC_RX_ADDR_P3_REG(base)  				 ((base)->NORDIC_RX_ADDR_P3_ADDR)
-#define NORDIC_RX_ADDR_P4_REG(base)  				 ((base)->NORDIC_RX_ADDR_P4_ADDR)
-#define NORDIC_RX_ADDR_P5_REG(base) 				 ((base)->NORDIC_RX_ADDR_P5_ADDR)
-#define NORDIC_TX_ADDR_REG(base)    				 ((base)->NORDIC_TX_ADDR_ADDR)
-#define NORDIC_RX_PW_P0_REG(base)   				 ((base)->NORDIC_RX_PW_P0_ADDR)
-#define NORDIC_RX_PW_P1_REG(base)  				 ((base)->NORDIC_RX_PW_P1_ADDR)
-#define NORDIC_RX_PW_P2_REG(base)  				 ((base)->NORDIC_RX_PW_P2_ADDR)
-#define NORDIC_RX_PW_P3_REG(base)   				 ((base)->NORDIC_RX_PW_P3_ADDR)
-#define NORDIC_RX_PW_P4_REG(base)   				 ((base)->NORDIC_RX_PW_P4_ADDR)
-#define NORDIC_RX_PW_P5_REG(base)    				 ((base)->NORDIC_RX_PW_P5_ADDR)
-#define NORDIC_FIFO_STATUS_REG(base) 				 ((base)->NORDIC_FIFO_STATUS_ADDR)
-#define NORDIC_DYNPD_REG(base)	  				 ((base)->NORDIC_DYNPD_ADDR)
-#define NORDIC_FEATURE_REG(base)				 ((base)->NORDIC_FEATURE_ADDR)
-
-
-#define NORDIC_CONFIG                            	 NORDIC_CONFIG_REG(NORDIC_BASE_PTR)
-#define NORDIC_EN_AA                            	 NORDIC_EN_AA_REG(NORDIC_BASE_PTR)
-#define NORDIC_EN_RXADDR                             	 NORDIC_EN_RXADDR_REG(NORDIC_BASE_PTR)
-#define NORDIC_SETUP_AW                          	 NORDIC_SETUP_AW_REG(NORDIC_BASE_PTR)
-#define NORDIC_SETUP_RETR                          	 NORDIC_SETUP_RETR_REG(NORDIC_BASE_PTR)
-#define NORDIC_RF_CH                           	 	 NORDIC_RF_CH_REG(NORDIC_BASE_PTR)
-#define NORDIC_RF_SETUP                           	 NORDIC_RF_SETUP_REG(NORDIC_BASE_PTR)
-#define NORDIC_STATUS                           	 NORDIC_STATUS_REG(NORDIC_BASE_PTR)
-#define NORDIC_OBSERVE_TX                            	 NORDIC_OBSERVE_TX_REG(NORDIC_BASE_PTR)
-#define NORDIC_CD                           	    	 NORDIC_CD_REG(NORDIC_BASE_PTR)
-#define NORDIC_RX_ADDR_P0                            	 NORDIC_RX_ADDR_P0_REG(NORDIC_BASE_PTR)
-#define NORDIC_RX_ADDR_P1                            	 NORDIC_RX_ADDR_P1_REG(NORDIC_BASE_PTR)
-#define NORDIC_RX_ADDR_P2                          	 NORDIC_RX_ADDR_P2_REG(NORDIC_BASE_PTR)
-#define NORDIC_RX_ADDR_P3                          	 NORDIC_RX_ADDR_P3_REG(NORDIC_BASE_PTR)
-#define NORDIC_RX_ADDR_P4                          	 NORDIC_RX_ADDR_P4_REG(NORDIC_BASE_PTR)
-#define NORDIC_RX_ADDR_P5                          	 NORDIC_RX_ADDR_P5_REG(NORDIC_BASE_PTR)
-#define NORDIC_TX_ADDR					 NORDIC_TX_ADDR_REG(NORDIC_BASE_PTR)
-#define NORDIC_RX_PW_P0                           	 NORDIC_RX_PW_P0_REG(NORDIC_BASE_PTR)
-#define NORDIC_RX_PW_P1                           	 NORDIC_RX_PW_P1_REG(NORDIC_BASE_PTR)
-#define NORDIC_RX_PW_P2                           	 NORDIC_RX_PW_P2_REG(NORDIC_BASE_PTR)
-#define NORDIC_RX_PW_P3                           	 NORDIC_RX_PW_P3_REG(NORDIC_BASE_PTR)
-#define NORDIC_RX_PW_P4                           	 NORDIC_RX_PW_P4_REG(NORDIC_BASE_PTR)
-#define NORDIC_RX_PW_P5                          	 NORDIC_RX_PW_P5_REG(NORDIC_BASE_PTR)
-#define NORDIC_FIFO_STATUS                           NORDIC_FIFO_STATUS_REG(NORDIC_BASE_PTR)
-#define NORDIC_DYNPD                           	 	 NORDIC_DYNPD_REG(NORDIC_BASE_PTR)
-#define NORDIC_FEATURE                         		 NORDIC_FEATURE_REG(NORDIC_BASE_PTR)
+//REGISTER MAP
+#define NORDIC_CONFIG		(0x00)
+#define NORDIC_EN_AA		(0X01)
+#define NORDIC_EN_RXADDR	(0X02)
+#define NORDIC_SETUP_AW		(0x03)
+#define NORDIC_SETUP_RETR	(0x04)
+#define NORDIC_RF_CH		(0x05)
+#define NORDIC_RF_SETUP		(0x06)
+#define NORDIC_STATUS		(0x07)
+#define NORDIC_OBSERVE_TX	(0x08)
+#define NORDIC_CD			(0x09)
+#define NORDIC_RX_ADDR_P0	(0x0A)
+#define NORDIC_RX_ADDR_P1	(0x0B)
+#define NORDIC_RX_ADDR_P2	(0x0C)
+#define NORDIC_RX_ADDR_P3	(0x0D)
+#define NORDIC_RX_ADDR_P4	(0x0E)
+#define NORDIC_RX_ADDR_P5	(0x0F)
+#define NORDIC_TX_ADDR		(0x10)
+#define NORDIC_RX_PW_P0		(0x11)
+#define NORDIC_RX_PW_P1		(0x12)
+#define NORDIC_RX_PW_P2		(0x13)
+#define NORDIC_RX_PW_P3		(0x14)
+#define NORDIC_RX_PW_P4		(0x15)
+#define NORDIC_RX_PW_P5		(0x16)
+#define NORDIC_FIFO_STATUS  (0x17)
+#define NORDIC_DYNPD		(0x1C)
+#define NORDIC_FEATURE		(0x1D)
 
 
 // CONFIG Register Bits
@@ -261,12 +198,19 @@ __IO  uint8_t NORDIC_FEATURE_ADDR;
 
 // Function prototypes
 void NORDIC_Write(uint8_t register1, uint8_t value);
-void NORDIC_Config(void);
+uint8_t NORDIC_Read(uint8_t register1);
+uint8_t NORDIC_ReadPayload(void *loc, uint8_t len);
+void NORDIC_ConfigTX(void);
+void NORDIC_ConfigRX(void);
 void CE_High(void);
 void CE_Low(void);
 void NORDIC_Write_Multiple(uint8_t register1, uint8_t *loc, uint8_t size);
+void NORDIC_Read_Multiple(uint8_t register1, uint8_t size);
 uint8_t NORDIC_Get_Status(void);
+void NORDIC_Set_TX_Address(void);
 void NORDIC_RF_Setup(void);
+void NORDIC_ResetStatusIRQ(uint8_t flags);
+void delay_100us(volatile unsigned char n);
 void NORDIC_TX_Payload(uint8_t *payload, uint8_t Payload_size);
 void NORDIC_TX_Flush(void);
 void NORDIC_RX_Flush(void);
