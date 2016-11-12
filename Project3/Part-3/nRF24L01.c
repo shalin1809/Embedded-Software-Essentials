@@ -287,3 +287,80 @@ void NORDIC_Set_TX_Address(){
 	NORDIC_Read_Multiple(NORDIC_TX_ADDR,5);
 
 }
+
+
+//creating test function for trying the extra credit part!
+void test_function(){
+
+	// Keeping the device in TX mode
+	NORDIC_Write(NORDIC_CONFIG, NORDIC_CONFIG_PRIM_TX|NORDIC_CONFIG_POWER_UP);
+	// enable auto-ack for pipe 0
+	NORDIC_Write(NORDIC_EN_AA, 0x00 | NORDIC_ENAA_P0(1));
+	// enable data pipe 1
+	NORDIC_Write(NORDIC_EN_RXADDR, 0x00 | NORDIC_ERX_P1(1));
+	//setting the RF channel no. 4c
+	NORDIC_Write(NORDIC_RF_CH, RF_CHANNEL);
+	//setting 1 byte as payload size for the receive pipe 0
+	NORDIC_Write(NORDIC_RX_PW_P1, PAYLOAD_SIZE);
+	//setting the tx address width of 5 bytes in the Setup_AW (setup address width register)
+	NORDIC_Write(NORDIC_SETUP_AW, NORDIC_AW_FIVE);
+	//Clocking in the TX address
+	NORDIC_Write_Multiple(NORDIC_TX_ADDR, (uint8_t *)TX_ADDR, 5);
+
+	//Send the payload data
+	NORDIC_CS_ENABLE();
+	SPI_write_read_byte(NORDIC_W_TX_PAYLOAD); //sending the write command
+	SPI_write_read_byte(0x01);	    		  //sending the payload , in this case 1 byte -> 0x01
+	NORDIC_CS_DISABLE();
+
+	//setting rx address to receive ack, this should be for data pipe 0, and same as tx addr
+	NORDIC_Write_Multiple(NORDIC_RX_ADDR_P0, (uint8_t *)TX_ADDR, 5);
+	//setting the RF parameters - data rate of 1mbps and power of 0dBm
+	NORDIC_Write(NORDIC_RF_SETUP, NORDIC_RF_DR_ONE | NORDIC_RF_PWR_ZERO);
+
+	//High pulse on CE
+	CE_High();
+	//Setting a delay of atleast 15us
+	delay(20);
+	//transmission complete
+	CE_Low();
+
+}
+
+
+void test_func_2(void){
+	delay(50);
+	CE_Low();
+	NORDIC_CS_DISABLE();
+	NORDIC_Write(NORDIC_RF_SETUP, NORDIC_RF_DR_ONE | NORDIC_RF_PWR_ZERO);
+	NORDIC_Write(NORDIC_RX_PW_P0, 1); //CHECK
+	NORDIC_Write(NORDIC_RF_CH, RF_CHANNEL);
+
+	NORDIC_Write_Multiple(NORDIC_RX_ADDR_P0, (uint8_t *)TX_ADDR, 5);
+	NORDIC_Write_Multiple(NORDIC_TX_ADDR, (uint8_t *)TX_ADDR, 5);
+
+	NORDIC_Write(NORDIC_EN_RXADDR, 0x00 | NORDIC_ERX_P0(1));
+
+	NORDIC_ResetStatusIRQ(NORDIC_STATUS_RX_DR(1)|NORDIC_STATUS_TX_DS(1)|NORDIC_STATUS_MAX_RT(1));
+
+	NORDIC_Write(NORDIC_EN_AA, 0x00 | NORDIC_ENAA_P0(1));
+
+	NORDIC_Write(NORDIC_SETUP_RETR, NORDIC_ARD_750|NORDIC_ARC_15);
+
+	NORDIC_Write(NORDIC_CONFIG, NORDIC_CONFIG_PRIM_TX|NORDIC_CONFIG_POWER_UP|NORDIC_CONFIG_EN_CRC(1)|NORDIC_CONFIG_CRCO_2);
+
+	CE_Low();
+
+	LOG_0("\n\rFilling payload",18);
+
+	NORDIC_TX_Flush();
+	NORDIC_CS_ENABLE();
+	SPI_write_read_byte(NORDIC_W_TX_PAYLOAD); //sending the write command
+	SPI_write_read_byte(0x01);	    		  //sending the payload , in this case 1 byte -> 0x01
+	NORDIC_CS_DISABLE();
+
+	CE_High();
+	delay(50);
+	CE_Low();
+
+}
