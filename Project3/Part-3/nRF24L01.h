@@ -214,6 +214,9 @@ void delay_100us(volatile unsigned char n);
 void NORDIC_TX_Payload(uint8_t *payload, uint8_t Payload_size);
 void NORDIC_TX_Flush(void);
 void NORDIC_RX_Flush(void);
+void test_function();
+void test_func_2();
+void delay(uint8_t delay);
 
 
 #endif /* INCLUDES_NRF24L01_H_ */
