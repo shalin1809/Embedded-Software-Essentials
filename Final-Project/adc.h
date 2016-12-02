@@ -14,9 +14,8 @@
 *   Description: Header file for ADC module
 *                -ADC0_init
 *                -ADC0_calibrate
-
+*                -mean_filter
 ********************************************************/
-
 #ifndef INCLUDES_ADC_H_
 #define INCLUDES_ADC_H_
 
@@ -26,5 +25,7 @@ void ADC0_init(void);
 //function to calibrate the ADC module
 int ADC0_calibrate(void);
 
+//applies a mean filter on temperature samples
+int mean_filter(uint32_t result);
 
 #endif /* INCLUDES_ADC_H_ */
