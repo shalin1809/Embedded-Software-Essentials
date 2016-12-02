@@ -14,21 +14,27 @@
 *   Description: Source file for ADC module
 *                -ADC0_init
 *                -ADC0_calibrate
-
+*		 -mean filter
 ********************************************************/
 
 #include "MKL25Z4.h"
+#include <stdint.h>
+#include "adc.h"
+
+uint8_t index = 0;
+uint32_t avg_result;
 
 //This function initializes the ADC module
 void ADC0_init(void)
 {
 SIM->SCGC5 |= 0x0800; /* clock to PORTC */
-PORTC->PCR[0] = 0; /* PTC0 analog input for LDR */
+PORTC->PCR[0] = 0; /* PTC0 analog input for temp sensor */
+PORTC->PCR[2] = 0; /* PTC2 analog input for LDR */
 
 /* clock to ADC0 */
 SIM->SCGC6 |= 0x8000000;
 /* software trigger */
-ADC0->SC2 &= ~0x40; 
+ADC0->SC2 &= ~0x40;
 /* clock div by 4, long sample time, single ended 16 bit, bus clock */
 ADC0->CFG1 = 0x40 | 0x10 | 0x0C | 0x00;
 }
@@ -61,4 +67,21 @@ int ADC0_calibrate(void)
 	ADC0_MG = calib;
 
 	return 0;
+}
+
+
+//applies a mean filter on temperature samples
+int mean_filter(uint32_t result){
+	if(index==0)
+		avg_result=0;
+	if(index!=50){
+		index++;
+		avg_result += result;
+		return 0;
+	}
+	else if(index==50){
+		index=0;
+		avg_result = avg_result/50;
+		return (uint16_t)avg_result;
+	}
 }
