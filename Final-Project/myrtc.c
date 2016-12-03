@@ -9,11 +9,18 @@
 *   by express written agreement with the Authors.
 *
 *   Authors: Shalin Shah and Snehal Sanghvi 
-*   Date Edited: 1 Dec 2016
+*   Date Edited: 3 Dec 2016
 *
 *   Description: Source file for using Real time clock on KL25Z
 *               -rtc_init
-*               -RTC_Seconds_IRQHandler
+*               -get_unix_time
+*               -calculate_date
+*               -get_rtc_seconds
+*               -get_rtc_minutes
+*               -get_rtc_hours
+*               -get_rtc_year
+*               -get_rtc_month
+*               -get_rtc_day
 *
 ********************************************************/
 
@@ -21,28 +28,7 @@
 #include "stdint.h"
 
 struct myrtc_t myrtc;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+uint32_t rtc_time;
 
 
 
@@ -79,7 +65,7 @@ void UART0_WriteChar(char BYTE){
 void UART0_WriteString(char string[]){
     char * str = string;
     while(*str)                         //Print the string till a NULL character ending
-        UART0_WriteChar(*str++);
+    UART0_WriteChar(*str++);
     UART0_WriteChar('\n');              //Go to newlinc and return carriage after writing the string
     UART0_WriteChar('\r');
 }
@@ -111,7 +97,7 @@ void UART0_ReadString(char * str){
 
 
 
-void rtc_init() 
+void rtc_init(void) 
 {   
     SIM_SCGC5 |= SIM_SCGC5_PORTC_MASK;      //Enable Port C
     UART0_init();
@@ -135,15 +121,10 @@ void rtc_init()
     }
     
     RTC_TCR = RTC_TCR_CIR(1) | RTC_TCR_TCR(0xCF);   //Setup compensation parameters
-  
-    NVIC->ICPR[0] |= RTC_Seconds_IRQn;
-    NVIC->ISER[0] |= RTC_Seconds_IRQn;              //Enable RTC interrupts
-    
-    RTC_IER |= RTC_IER_TSIE_MASK;                   //Seconds interrupt enable
     RTC_CR |= RTC_CR_OSCE_MASK;                     //Enable 32.768Hz oscillator
-    RTC_SR |= RTC_SR_TCE_MASK;                      //Enable RTC
-    RTC_TSR = 0xFF;                                 //Reset the seconds register
     
+    RTC_TSR = 0x58425F60;                           //Reset the seconds register
+    RTC_SR |= RTC_SR_TCE_MASK;                      //Enable RTC
 
    
     UART0_WriteString("Hello");
@@ -153,26 +134,168 @@ void rtc_init()
 }
 
 
-void RTC_Seconds_IRQHandler(void) 
-{
-	myrtc.seconds = RTC_TSR;                      //Update seconds
-    if (myrtc.seconds >59){
-    	myrtc.minutes++;                          //Update minutes
-        if(myrtc.minutes>59){
-            myrtc.hours++;                        //Update hours
-            myrtc.minutes=0;
-            if(myrtc.hours>24)
-                myrtc.hours = 0;
+
+ uint32_t get_unix_time(void){
+     rtc_time = RTC_TSR;   
+     return rtc_time;             //Send the UNIX timestamp
+}
+
+
+void calculate_date(void){
+    uint32_t years, days ;
+    uint8_t leap_years;
+    rtc_time = get_unix_time();         //Get latest timestamp
+    
+    myrtc.seconds = rtc_time%60;        //Update seconds
+    rtc_time /= 60;
+    
+    myrtc.minutes = rtc_time%60;        //Update minutes
+    rtc_time /= 60;
+    
+    myrtc.hours = rtc_time%24;          //Update hours
+    rtc_time /= 24;
+    
+    years = rtc_time*4;
+    years /= (365*4 +1);                //Calculate number of years since 1970
+    myrtc.year = (1970+years);          //Update years
+    
+    leap_years = years/4;
+    years -= leap_years;
+    
+    days = leap_years*366 + years*365;
+    days = rtc_time - days + 1;             //Calculate number of days since 1970
+    
+    if(myrtc.year%4 == 0){              //For leap years
+        if(days <= 31){
+            myrtc.month = 1;            //January
+            myrtc.day = days;
         }
-    	RTC_SR &= ~RTC_SR_TCE_MASK;             //Disable RTC
-    	RTC_TSR = 0x00;                         //Reset seconds
-    	myrtc.seconds = 0;
-    	RTC_SR |= RTC_SR_TCE_MASK;	            //Enable RTC
+        else if(days <= 60){
+            myrtc.month = 2;            //February
+            myrtc.day = days - 31;
+        }
+        else if(days <= 91){
+            myrtc.month = 3;            //March
+            myrtc.day = days - 60;
+        }
+        else if(days <= 121){
+            myrtc.month = 4;            //April
+            myrtc.day = days - 91;
+        }
+        else if(days <= 152){
+            myrtc.month = 5;            //May
+            myrtc.day = days - 121;
+        }
+        else if(days <= 182){
+            myrtc.month = 6;            //June
+            myrtc.day = days - 152;
+        }
+        else if(days <= 213){
+            myrtc.month = 7;            //July
+            myrtc.day = days - 182;
+        }
+        else if(days <= 244){
+            myrtc.month = 8;            //August
+            myrtc.day = days - 213;
+        }
+        else if(days <= 274){
+            myrtc.month = 9;            //September
+            myrtc.day = days - 244;
+        }
+        else if(days <= 305){
+            myrtc.month = 10;            //October
+            myrtc.day = days - 274;
+        }
+        else if(days <= 335){
+            myrtc.month = 11;            //November
+            myrtc.day = days - 305;
+        }
+        else{
+            myrtc.month = 12;            //December
+            myrtc.day = days - 335;
+        }
     }
-            UART0_WriteChar((myrtc.minutes/10 + 48));
-            UART0_WriteChar((myrtc.minutes%10 + 48));
-            UART0_WriteChar('\t');
-            UART0_WriteChar((myrtc.seconds/10 + 48));
-            UART0_WriteChar((myrtc.seconds%10 + 48));
+    else if(myrtc.year%4 != 0){              //For non-leap years
+        if(days <= 31){
+            myrtc.month = 1;            //January
+            myrtc.day = days;
+        }
+        else if(days <= 59){
+            myrtc.month = 2;            //February
+            myrtc.day = days - 31;
+        }
+        else if(days <= 90){
+            myrtc.month = 3;            //March
+            myrtc.day = days - 59;
+        }
+        else if(days <= 120){
+            myrtc.month = 4;            //April
+            myrtc.day = days - 90;
+        }
+        else if(days <= 151){
+            myrtc.month = 5;            //May
+            myrtc.day = days - 120;
+        }
+        else if(days <= 181){
+            myrtc.month = 6;            //June
+            myrtc.day = days - 151;
+        }
+        else if(days <= 212){
+            myrtc.month = 7;            //July
+            myrtc.day = days - 181;
+        }
+        else if(days <= 243){
+            myrtc.month = 8;            //August
+            myrtc.day = days - 212;
+        }
+        else if(days <= 273){
+            myrtc.month = 9;            //September
+            myrtc.day = days - 243;
+        }
+        else if(days <= 304){
+            myrtc.month = 10;            //October
+            myrtc.day = days - 273;
+        }
+        else if(days <= 334){
+            myrtc.month = 11;            //November
+            myrtc.day = days - 304;
+        }
+        else{
+            myrtc.month = 12;            //December
+            myrtc.day = days - 334;
+        }
+    }
+}
+
+
+
+uint8_t get_rtc_seconds(void){
+    calculate_date();
+    return myrtc.seconds;
+}
+
+uint8_t get_rtc_minutes(void){
+    calculate_date();
+    return myrtc.minutes;
+}
+
+uint8_t get_rtc_hours(void){
+    calculate_date();
+    return myrtc.hours;
+}
+
+uint16_t get_rtc_year(void){
+    calculate_date();
+    return myrtc.year;
+}
+
+uint8_t get_rtc_month(void){
+    calculate_date();
+    return myrtc.month;
+}
+
+uint8_t get_rtc_day(void){
+    calculate_date();
+    return myrtc.day;
 }
 
