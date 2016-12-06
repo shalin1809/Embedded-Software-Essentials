@@ -32,7 +32,7 @@ uint32_t rtc_time;
 
 
 
-
+/*
 
 void UART0_init(void) {
     SIM_SCGC4 |= 0x00000400;            // enable clock for UART
@@ -77,7 +77,7 @@ void UART0_ReadString(char * str){
     __enable_irq();
 }
 
-
+*/
 
 
 
@@ -99,16 +99,13 @@ void UART0_ReadString(char * str){
 
 void rtc_init(void) 
 {   
-    SIM_SCGC5 |= SIM_SCGC5_PORTC_MASK;      //Enable Port C
-    UART0_init();
-    
+    SIM_SCGC5 |= SIM_SCGC5_PORTC_MASK;      //Enable Port C 
     MCG_C1 |= MCG_C1_IRCLKEN_MASK;      //Enable internal reference clock
 	MCG_C2 &= ~(MCG_C2_IRCS_MASK);      //Internal Reference Clock Slow
 	PORTC_PCR1 |= (PORT_PCR_MUX(0x1));              //PTC1 as RTC_CLKIN
     SIM_SOPT1 |= 0x00080000;                    //RTC_CLKIN selected for OSC32KCLK
     SIM_SOPT2 |= 0x00000080;                    //MCGIRCLK selected for clock out
     PORTC_PCR3 |= (PORT_PCR_MUX(0x5));              //PTC3 as CLKOUT
-    
     
     __enable_irq();
     
@@ -122,12 +119,8 @@ void rtc_init(void)
     
     RTC_TCR = RTC_TCR_CIR(1) | RTC_TCR_TCR(0xCF);   //Setup compensation parameters
     RTC_CR |= RTC_CR_OSCE_MASK;                     //Enable 32.768Hz oscillator
-    
     RTC_TSR = 0x58425F60;                           //Reset the seconds register
     RTC_SR |= RTC_SR_TCE_MASK;                      //Enable RTC
-
-   
-    UART0_WriteString("Hello");
     myrtc.seconds=0;
     myrtc.minutes=0;
     myrtc.hours=0;
