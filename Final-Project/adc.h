@@ -14,18 +14,25 @@
 *   Description: Header file for ADC module
 *                -ADC0_init
 *                -ADC0_calibrate
-*                -mean_filter
+*		         -mean filter
 ********************************************************/
-#ifndef INCLUDES_ADC_H_
-#define INCLUDES_ADC_H_
+
+
+#ifndef ADC_H_
+#define ADC_H_
+
+#include "MKL25Z4.h"
+#include "stdint.h"
 
 //This function initializes the ADC module
 void ADC0_init(void);
 
 //function to calibrate the ADC module
-int ADC0_calibrate(void);
+void ADC0_calibrate(void);
 
 //applies a mean filter on temperature samples
-int mean_filter(uint32_t result);
+uint32_t mean_filter(uint32_t result);
 
-#endif /* INCLUDES_ADC_H_ */
+uint16_t ADC0_GetValue(uint8_t channel_number);
+
+#endif 
