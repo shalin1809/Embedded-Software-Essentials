@@ -45,10 +45,6 @@ typedef struct myrtc_t {
 
 void rtc_init(void) ;
 
-void UART0_WriteString(char string[]);
-
-void UART0_WriteChar(char BYTE);
-
 uint32_t get_unix_time(void);
 
 void calculate_date(void);
