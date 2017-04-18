@@ -47,7 +47,8 @@ void UART0_init(void) {
     UART0_C1 = 0x00000000;              // Select 8-bit mode 
     UART0_C2 = 0x0000002C;              // enable transmit and receive
     SIM_SCGC5 |= 0x00000200;            // enable clock for PORTA 
-    NVIC->ISER[0] = 0x000001000;        // enable IRQ12 which is for UART0
+    NVIC->ISER[0] |= 0x000001000;        // enable IRQ12 which is for UART0
+    NVIC_EnableIRQ(UART0_IRQn);
     PORTA_PCR1 = 0x00000200;            // Select PTA1 as Receive pin
     PORTA_PCR2 = 0x00000200;            // Select PTA2 as Transmit pin
 }
@@ -59,15 +60,15 @@ char UART0_ReadChar(void){
 }
 
 
-void UART0_WriteChar(char BYTE){
-    int a = add_item(tx_buffer, BYTE);
-    UART0_C2 |= 0x00000080;              //Enable transmit interrupt 
-}
+void UART0_WriteChar(char byte){
+    while(!(UART0->S1 & 0xC0)){}        // Wait till transmit buffer empty and Transmit complete
+     UART0_D = byte;                     // send a char
+ }
 
 void UART0_WriteString(char string[]){
     char * str = string;
     while(*str)                         //Print the string till a NULL character ending
-        UART0_WriteChar(*str++);
+    UART0_WriteChar(*str++);
     UART0_WriteChar('\n');              //Go to newlinc and return carriage after writing the string
     UART0_WriteChar('\r');
 }

@@ -30,6 +30,7 @@
 struct myrtc_t myrtc;
 uint32_t rtc_time;
 
+
 void rtc_init(void) 
 {   
     SIM_SCGC5 |= SIM_SCGC5_PORTC_MASK;      //Enable Port C 
@@ -41,7 +42,6 @@ void rtc_init(void)
     PORTC_PCR3 |= (PORT_PCR_MUX(0x5));              //PTC3 as CLKOUT
     
     __enable_irq();
-    
     SIM_SCGC6 |= SIM_SCGC6_RTC_MASK;        //Enable the clock to RTC
     RTC_CR  = RTC_CR_SWR_MASK;              
     RTC_CR  &= ~RTC_CR_SWR_MASK;            //Disable and reset RTC
@@ -51,12 +51,21 @@ void rtc_init(void)
     }
     
     RTC_TCR = RTC_TCR_CIR(1) | RTC_TCR_TCR(0xCF);   //Setup compensation parameters
+    
+    
+    //NVIC_EnableIRQ(RTC_Seconds_IRQn);               //Enable Seconds interrupt
+    RTC_IER |= RTC_IER_TAIE_MASK;                   //Alarm interrupt enable
+    RTC_IER |= RTC_IER_TSIE_MASK;                   //Seconds interrupt enable
+    
     RTC_CR |= RTC_CR_OSCE_MASK;                     //Enable 32.768Hz oscillator
-    RTC_TSR = 0x58425F60;                           //Reset the seconds register
+    RTC_TAR = 0xFF;
+    RTC_TSR = 0x58489BD0;                           //Reset the seconds register to Dec 3 2016 06:00:00
     RTC_SR |= RTC_SR_TCE_MASK;                      //Enable RTC
+    RTC_TAR = 0xFF;
     myrtc.seconds=0;
     myrtc.minutes=0;
     myrtc.hours=0;
+    myrtc.timezone = -700;
 }
 
 
@@ -70,7 +79,7 @@ void rtc_init(void)
 void calculate_date(void){
     uint32_t years, days ;
     uint8_t leap_years;
-    rtc_time = get_unix_time();         //Get latest timestamp
+    rtc_time = (get_unix_time() + myrtc.timezone*36);         //Get latest timestamp
     
     myrtc.seconds = rtc_time%60;        //Update seconds
     rtc_time /= 60;
@@ -225,3 +234,18 @@ uint8_t get_rtc_day(void){
     return myrtc.day;
 }
 
+void set_unix_time(uint32_t time){
+    RTC_SR &= ~(RTC_SR_TCE_MASK);                       //Disable RTC
+    RTC_TSR = time;                                     //Set RTC to the given time
+    RTC_SR |= RTC_SR_TCE_MASK;                          //Enable RTC
+}
+
+void set_alarm(uint32_t alarm){
+    RTC_TAR = alarm;
+    NVIC_EnableIRQ(RTC_IRQn);
+}
+
+void disable_alarm(void){
+    RTC_TAR = 0xFF;
+    NVIC_DisableIRQ(RTC_IRQn);
+}

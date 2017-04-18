@@ -27,8 +27,9 @@ uint32_t avg_result;
 void ADC0_init(void)
 {
     SIM->SCGC5 |= 0x0800;       //clock to PORTC 
-    PORTC->PCR[0] = 0;          //PTC0 analog input for temp sensor
-    PORTC->PCR[2] = 0;          // PTC2 analog input for LDR
+    SIM_SCGC5 |= SIM_SCGC5_PORTD_MASK;
+    PORTC->PCR[0] = 0;          //PTC0 analog input for LDR
+    PORTD->PCR[5] = 0;         //PTE20 analog input for temperature sensor
     SIM->SCGC6 |= 0x8000000;    //clock to ADC0
     ADC0->SC2 &= ~0x40;         // software trigger
     ADC0->CFG1 = 0x40 | 0x10 | 0x0C | 0x00;     // clock div by 4, long sample time, single ended 16 bit, bus clock

@@ -58,6 +58,7 @@ void BLUE_PWM_init(void){
     TPM0_SC = 0x0000008;                //Set divider as 0, select LPTPM to count on every clock, up counting mode
 }
 
+
 void PWM_init(void){
     RED_PWM_init();
     GREEN_PWM_init();

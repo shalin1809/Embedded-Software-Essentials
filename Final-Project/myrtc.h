@@ -30,6 +30,7 @@
 #include "MKL25Z4.h"
 #include "stdint.h"
 
+#include "Buzzer.h"
 
 
 
@@ -40,6 +41,7 @@ typedef struct myrtc_t {
     uint16_t year;
     uint8_t month;
     uint8_t day;
+    int16_t timezone;
 }rtc;
 
 
@@ -60,5 +62,15 @@ uint16_t get_rtc_year(void);
 uint8_t get_rtc_month(void);
 
 uint8_t get_rtc_day(void);
+
+void set_unix_time(uint32_t time);
+
+void RTC_IRQHandler(void);
+
+void RTC_Seconds_IRQHandler(void);
+
+void set_alarm(uint32_t alarm);
+
+void disable_alarm(void);
 
 #endif

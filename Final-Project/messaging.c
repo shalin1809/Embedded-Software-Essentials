@@ -11,7 +11,7 @@
 *
 *
 *   Authors: Shalin Shah and Snehal Sanghvi
-*   Date Edited: 9 Nov 2016
+*   Date Edited: 7 Dec 2016
 *
 *   Description: Source file for messaging using Circular buffer
 *               -decode_message
@@ -22,12 +22,19 @@
 
 #include "messaging.h"
 
-
+/* Circular buffers used for transmission and receiveing data**/
 extern CircBuf_t *rx_buffer;
 extern CircBuf_t *tx_buffer;
 
 
-/* Function to decode the incoming message packet*/
+/************************************
+decode_message
+
+Description: It is used to decode the received message
+
+Parameters: None
+
+************************************/
 void decode_message (void){   
     int total_data = 0;                                             //To count the total data bytes
     __wfi();                                                        //Wait till a new char is received     
@@ -116,19 +123,52 @@ void decode_message (void){
         }
         else if(message.Command == ECHO){
             UART0_WriteString("\n\r Echo mode: ");
-            UART0_WriteString((char*)message.data);
+            UART0_WriteString((char*)message.data);     //ECHO message input by user
+        }
+        
+        else if(message.Command == SET_TIME){
+            set_unix_time((message.data[0]<<24)         //Set the 32 bit time using 4 bit inputs
+                        |(message.data[1]<<16)
+                        |(message.data[2]<<8)
+                        |message.data[3]);
+        }
+        else if(message.Command == SET_ALARM){
+            set_alarm((message.data[0]<<24)           //Set the 32 bit time using 4 bit inputs
+                    |(message.data[1]<<16)
+                    |(message.data[2]<<8)
+                    |message.data[3]);
+            UART0_WriteString("Alarm set");
+        }
+        else if(message.Command == SET_ALARM_10SECONDS){
+            set_alarm(RTC_TSR + 10);
+            UART0_WriteString("Alarm set");
         }
     }        
 }
 
 
-/*Function to send acknowledge after the message is received*/
-void ack_nack (CMDS reply){
+
+/************************************
+ack_nack
+
+Description: Send ACK or NACK after validating the checksum
+
+Parameters: packet
+
+************************************/
+void ack_nack(CMDS reply){
     UART0_WriteChar(reply);                             //Send the ack/nack reply 
 }
 
 
-/*Function to validate the checksum at the end of each message using addition algorithm*/
+/************************************
+checksum_validate
+
+Description: Verifies the checksum received and returns error code 
+
+Parameters: None
+
+************************************/
 ERR checksum_validate (void){
     int i=0;                                            //Integer to count the data
     uint16_t check_sum;                                 //Generate checksum using the message data    
