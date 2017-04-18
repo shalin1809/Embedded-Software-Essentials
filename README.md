@@ -1,2 +1,2 @@
-# Embedded-Software-Essentials
-The awesome repository for Embedded Software Essentials
+
+This repository is for the class projects made for ECEN 5013 Embedded Software Essentials
